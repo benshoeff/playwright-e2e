@@ -1,0 +1,42 @@
+name: Daily E2E Tests
+
+on:
+  schedule:
+    # Runs every day at 06:00 UTC (09:00 Israel time in winter, 09:00/08:00 depending on DST).
+    # Adjust the hour if you want a different time of day.
+    - cron: '0 6 * * *'
+  workflow_dispatch: # allows manually triggering a run from the GitHub Actions tab
+
+jobs:
+  e2e:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests against production
+        run: npx playwright test --project=production
+
+      # Uploads the HTML report so you can download and inspect it
+      # from the workflow run page, even when everything passes.
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
