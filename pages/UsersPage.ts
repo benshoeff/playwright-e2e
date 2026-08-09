@@ -31,7 +31,7 @@ export class UsersPage {
     this.usersSidebarItem = page.getByTestId('users-sidebar-item');
     this.pageTitle = page.getByTestId('page-title');
     this.pageDescription = page.getByTestId('page-description');
-    this.addUserButton = page.getByTestId('add-user-button');
+    this.addUserButton = page.getByTestId('add-users-button');
     this.nameInput = page.getByTestId('name-input');
     this.emailInput = page.getByTestId('email-input');
     this.roleSelect = page.getByTestId('roleId-select');

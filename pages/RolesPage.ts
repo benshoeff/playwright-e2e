@@ -29,7 +29,7 @@ export class RolesPage {
     this.rolesSidebarItem = page.getByTestId('roles-sidebar-item');
     this.pageTitle = page.getByTestId('page-title');
     this.pageDescription = page.getByTestId('page-description');
-    this.addRoleButton = page.getByTestId('add-role-button');
+    this.addRoleButton = page.getByTestId('add-roles-button');
     this.nameInput = page.getByTestId('name-input');
     this.descriptionInput = page.getByTestId('textarea-input');
     this.submitButton = page.getByTestId('submit-button');
