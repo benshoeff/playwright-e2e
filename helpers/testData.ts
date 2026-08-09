@@ -14,6 +14,16 @@ export interface CreateUserApiPayload {
   status: UserStatus;
 }
 
+export interface RoleFormData {
+  name: string;
+  description: string;
+}
+
+export interface CreateRoleApiPayload {
+  name: string;
+  description: string;
+}
+
 // Maps the label shown in the UI <select> to the value the API expects.
 // Extend this if more roles are added to the app.
 const ROLE_LABEL_TO_ID: Record<string, string> = {
@@ -40,6 +50,17 @@ export function buildUser(overrides: Partial<UserFormData> = {}): UserFormData {
     email: `user+${uniqueId}@example.com`,
     roleLabel: 'Admin',
     status: 'active',
+    ...overrides,
+  };
+}
+
+export function buildRole(overrides: Partial<RoleFormData> = {}): RoleFormData {
+  counter += 1;
+  const uniqueId = `${Date.now()}_${counter}`;
+
+  return {
+    name: `Role ${uniqueId}`,
+    description: `Description for ${uniqueId}`,
     ...overrides,
   };
 }
