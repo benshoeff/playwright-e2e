@@ -1,21 +1,23 @@
 import { Page, Locator, expect } from '@playwright/test';
-import { RoleFormData } from '../helpers/testData';
+import { PermissionFormData } from '../helpers/testData';
 
-export class RolesPage {
+export class PermissionsPage {
   readonly page: Page;
 
   readonly appName: Locator;
   readonly appDescription: Locator;
-  readonly rolesSidebarItem: Locator;
+  readonly permissionsSidebarItem: Locator;
   readonly pageTitle: Locator;
   readonly pageDescription: Locator;
-  readonly addRoleButton: Locator;
+  readonly addPermissionButton: Locator;
   readonly nameInput: Locator;
+  readonly resourceInput: Locator;
+  readonly actionSelect: Locator;
   readonly descriptionInput: Locator;
   readonly submitButton: Locator;
   readonly successToast: Locator;
   readonly toastCloseButton: Locator;
-  readonly rolesDataTable: Locator;
+  readonly permissionsDataTable: Locator;
   readonly modalIcon: Locator;
   readonly modalTitle: Locator;
   readonly modalDescription: Locator;
@@ -26,16 +28,18 @@ export class RolesPage {
     this.page = page;
     this.appName = page.getByTestId('app-name');
     this.appDescription = page.getByTestId('app-description');
-    this.rolesSidebarItem = page.getByTestId('roles-sidebar-item');
+    this.permissionsSidebarItem = page.getByTestId('permissions-sidebar-item');
     this.pageTitle = page.getByTestId('page-title');
     this.pageDescription = page.getByTestId('page-description');
-    this.addRoleButton = page.getByTestId('add-roles-button');
+    this.addPermissionButton = page.getByTestId('add-permissions-button');
     this.nameInput = page.getByTestId('name-input');
+    this.resourceInput = page.getByTestId('resource-input');
+    this.actionSelect = page.getByTestId('action-select');
     this.descriptionInput = page.getByTestId('textarea-input');
     this.submitButton = page.getByTestId('submit-button');
     this.successToast = page.getByTestId('success-toast');
     this.toastCloseButton = page.getByTestId('toast-close-button');
-    this.rolesDataTable = page.getByTestId('roles-data-table');
+    this.permissionsDataTable = page.getByTestId('permissions-data-table');
     this.modalIcon = page.getByTestId('modal-icon');
     this.modalTitle = page.getByTestId('modal-title');
     this.modalDescription = page.getByTestId('modal-description');
@@ -43,8 +47,8 @@ export class RolesPage {
     this.modalDeleteButton = page.getByTestId('modal-delete-button');
   }
 
-  row(roleName: string): Locator {
-    return this.page.locator('tr').filter({ hasText: roleName });
+  row(permissionName: string): Locator {
+    return this.page.locator('tr').filter({ hasText: permissionName });
   }
 
   async goto() {
@@ -53,23 +57,25 @@ export class RolesPage {
     await expect(this.appDescription).toHaveText('Testing Platform');
   }
 
-  async openRolesPage() {
-    await this.rolesSidebarItem.click();
-    await expect(this.pageTitle).toHaveText('Roles');
-    await expect(this.pageDescription).toHaveText('Define user roles and access levels');
+  async openPermissionsPage() {
+    await this.permissionsSidebarItem.click();
+    await expect(this.pageTitle).toHaveText('Permissions');
+    await expect(this.pageDescription).toHaveText('Manage access permissions');
   }
 
   async openCreateForm() {
-    await this.addRoleButton.click();
-    await expect(this.page.locator('h2').last()).toHaveText('Create Role');
+    await this.addPermissionButton.click();
+    await expect(this.page.locator('h2').last()).toHaveText('Create Permission');
   }
 
-  async openEditForm(roleName: string) {
-    await this.row(roleName).getByTestId('edit-button').click();
+  async openEditForm(permissionName: string) {
+    await this.row(permissionName).getByTestId('edit-button').click();
   }
 
-  async fillForm(data: RoleFormData) {
+  async fillForm(data: PermissionFormData) {
     await this.nameInput.fill(data.name);
+    await this.resourceInput.fill(data.resource);
+    await this.actionSelect.selectOption({ label: data.action });
     await this.descriptionInput.fill(data.description);
   }
 
@@ -78,7 +84,7 @@ export class RolesPage {
   async submitAndWaitForApi(method: 'POST' | 'PUT' | 'PATCH') {
     const [response] = await Promise.all([
       this.page.waitForResponse(
-        (resp) => resp.url().includes('/api/roles') && resp.request().method() === method
+        (resp) => resp.url().includes('/api/permissions') && resp.request().method() === method
       ),
       this.submitButton.click(),
     ]);
@@ -92,17 +98,19 @@ export class RolesPage {
     await expect(this.successToast).not.toBeVisible();
   }
 
-  async expectRow(roleName: string, data: { description: string }) {
-    const row = this.row(roleName);
-    await expect(row.getByTestId('data-name')).toContainText(roleName);
+  async expectRow(permissionName: string, data: { resource: string; action: string; description: string }) {
+    const row = this.row(permissionName);
+    await expect(row.getByTestId('data-name')).toContainText(permissionName);
+    await expect(row.getByTestId('data-resource')).toContainText(data.resource);
+    await expect(row.getByTestId('data-action')).toContainText(data.action);
     await expect(row.getByTestId('data-description')).toContainText(data.description);
   }
 
-  async deleteRole(roleName: string) {
-    const row = this.row(roleName);
+  async deletePermission(permissionName: string) {
+    const row = this.row(permissionName);
     await row.getByTestId('delete-button').click();
     await expect(this.modalIcon).toBeVisible();
-    await expect(this.modalTitle).toHaveText('Delete Role');
+    await expect(this.modalTitle).toHaveText('Delete Permission');
     await expect(this.modalDescription).toContainText('Are you sure you want to delete');
     await expect(this.modalCancelButton).toBeVisible();
     await this.modalDeleteButton.click();

@@ -24,6 +24,22 @@ export interface CreateRoleApiPayload {
   description: string;
 }
 
+export type PermissionAction = 'create' | 'read' | 'update' | 'delete' | 'manage';
+
+export interface PermissionFormData {
+  name: string;
+  resource: string;
+  action: PermissionAction;
+  description: string;
+}
+
+export interface CreatePermissionApiPayload {
+  name: string;
+  resource: string;
+  action: PermissionAction;
+  description: string;
+}
+
 // Maps the label shown in the UI <select> to the value the API expects.
 // Extend this if more roles are added to the app.
 const ROLE_LABEL_TO_ID: Record<string, string> = {
@@ -60,6 +76,19 @@ export function buildRole(overrides: Partial<RoleFormData> = {}): RoleFormData {
 
   return {
     name: `Role ${uniqueId}`,
+    description: `Description for ${uniqueId}`,
+    ...overrides,
+  };
+}
+
+export function buildPermission(overrides: Partial<PermissionFormData> = {}): PermissionFormData {
+  counter += 1;
+  const uniqueId = `${Date.now()}_${counter}`;
+
+  return {
+    name: `Permission ${uniqueId}`,
+    resource: 'reports',
+    action: 'read',
     description: `Description for ${uniqueId}`,
     ...overrides,
   };
