@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>דשבורד טסטים</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <h1>דשבורד טסטים</h1>
+      <span class="source-badge">ריצות GitHub</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="cards">
+      <h2 class="section-title">הריצה האחרונה</h2>
+      <div class="cards-grid">
+        <div class="card"><div class="card-label">סה״כ טסטים</div><div class="card-value" id="latestTotal">–</div></div>
+        <div class="card ok"><div class="card-label">עברו</div><div class="card-value" id="latestPassed">–</div></div>
+        <div class="card bad"><div class="card-label">נכשלו</div><div class="card-value" id="latestFailed">–</div></div>
+        <div class="card warn"><div class="card-label">Flaky</div><div class="card-value" id="latestFlaky">–</div></div>
+        <div class="card"><div class="card-label">דילגו</div><div class="card-value" id="latestSkipped">–</div></div>
+        <div class="card accent"><div class="card-label">אחוז הצלחה</div><div class="card-value" id="latestRate">–</div></div>
+      </div>
+      <div class="latest-run-meta" id="latestMeta"></div>
+
+      <h2 class="section-title">מצטבר (כל הזמנים)</h2>
+      <div class="cards-grid">
+        <div class="card"><div class="card-label">ריצות</div><div class="card-value" id="allRuns">–</div></div>
+        <div class="card"><div class="card-label">סה״כ טסטים</div><div class="card-value" id="allTotal">–</div></div>
+        <div class="card ok"><div class="card-label">עברו</div><div class="card-value" id="allPassed">–</div></div>
+        <div class="card bad"><div class="card-label">נכשלו</div><div class="card-value" id="allFailed">–</div></div>
+        <div class="card warn"><div class="card-label">Flaky</div><div class="card-value" id="allFlaky">–</div></div>
+        <div class="card accent"><div class="card-label">אחוז הצלחה</div><div class="card-value" id="allRate">–</div></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="section-title">מגמה לאורך זמן</h2>
+      <div id="trendChart" class="chart"></div>
+      <div class="legend">
+        <span><span class="legend-dot ok-dot"></span>עברו</span>
+        <span><span class="legend-dot bad-dot"></span>נכשלו</span>
+      </div>
+    </section>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="runs">ריצות</button>
+      <button class="tab" data-tab="tests">טסטים</button>
+    </nav>
+
+    <section id="tab-runs" class="tab-panel">
+      <div class="toolbar">
+        <select id="runProjectFilter" class="filter">
+          <option value="">כל הפרויקטים</option>
+        </select>
+        <select id="runStatusFilter" class="filter">
+          <option value="">כל הסטטוסים</option>
+          <option value="passed">עברו</option>
+          <option value="failed">נכשלו</option>
+          <option value="timedout">Timed out</option>
+          <option value="interrupted">נקטעו</option>
+        </select>
+        <select id="runSinceFilter" class="filter">
+          <option value="">כל התקופה</option>
+          <option value="7">7 ימים אחרונים</option>
+          <option value="30">30 ימים אחרונים</option>
+          <option value="90">90 ימים אחרונים</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table id="runsTable">
+          <thead>
+            <tr>
+              <th>תאריך</th>
+              <th>פרויקט</th>
+              <th>סטטוס</th>
+              <th>סה״כ</th>
+              <th>עברו</th>
+              <th>נכשלו</th>
+              <th>משך</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tab-tests" class="tab-panel hidden">
+      <div class="table-wrap">
+        <table id="testsTable">
+          <thead>
+            <tr>
+              <th>טסט</th>
+              <th>פרויקט</th>
+              <th>ריצות</th>
+              <th>עברו</th>
+              <th>נכשלו</th>
+              <th>אחוז הצלחה</th>
+              <th>סטטוס אחרון</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="historyModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">היסטוריה</h3>
+        <button id="modalClose" class="btn small">סגור</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

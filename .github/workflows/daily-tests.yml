@@ -7,6 +7,9 @@ on:
     - cron: '0 6 * * *'
   workflow_dispatch: # allows manually triggering a run from the GitHub Actions tab
 
+permissions:
+  contents: write
+
 jobs:
   e2e:
     timeout-minutes: 30
@@ -30,6 +33,8 @@ jobs:
 
       - name: Run Playwright tests against production
         run: npx playwright test --project=production
+        env:
+          DASHBOARD_DATA: '1'
 
       # Uploads the HTML report so you can download and inspect it
       # from the workflow run page, even when everything passes.
@@ -40,3 +45,26 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 14
+
+      # Fetch the previously published history so the new run can be appended to it.
+      - name: Fetch previous dashboard history
+        if: always()
+        run: |
+          git fetch origin gh-pages --depth=1 || true
+          mkdir -p dashboard/dashboard-data
+          git show origin/gh-pages:dashboard-data/history.json > dashboard/dashboard-data/history.json 2>/dev/null || echo '[]' > dashboard/dashboard-data/history.json
+
+      - name: Merge run into history
+        if: always()
+        run: node scripts/merge-history.js
+
+      # Publishes the static dashboard (including latest.json + history.json)
+      # to the gh-pages branch, which GitHub Pages serves.
+      - name: Deploy dashboard to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: dashboard
+          publish_branch: gh-pages
+          force_orphan: false
