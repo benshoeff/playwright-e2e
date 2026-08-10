@@ -1,10 +1,14 @@
 import { test, expect } from '../fixtures';
-import { buildUser, roleLabelToId } from '../helpers/testData';
-import { createUserViaApi } from '../helpers/api';
+import { buildUser, buildRole } from '../helpers/testData';
+import { createUserViaApi, createRoleViaApi } from '../helpers/api';
 
 test.describe('Users CRUD', () => {
-  test('creates a new user', async ({ usersPage, trackUserForCleanup }) => {
-    const user = buildUser();
+  test('creates a new user', async ({ usersPage, trackRoleForCleanup, trackUserForCleanup, request }) => {
+    const role = buildRole();
+    const createdRole = await createRoleViaApi(request, role);
+    trackRoleForCleanup(createdRole.id);
+
+    const user = buildUser({ roleLabel: role.name });
 
     await test.step('navigate to the users page', async () => {
       await usersPage.goto();
@@ -29,19 +33,27 @@ test.describe('Users CRUD', () => {
     });
   });
 
-  test('edits an existing user', async ({ usersPage, trackUserForCleanup, request }) => {
-    const original = buildUser();
+  test('edits an existing user', async ({ usersPage, trackRoleForCleanup, trackUserForCleanup, request }) => {
+    const originalRole = buildRole();
+    const originalRoleCreated = await createRoleViaApi(request, originalRole);
+    trackRoleForCleanup(originalRoleCreated.id);
+
+    const updatedRole = buildRole();
+    const updatedRoleCreated = await createRoleViaApi(request, updatedRole);
+    trackRoleForCleanup(updatedRoleCreated.id);
+
+    const original = buildUser({ roleLabel: originalRole.name });
     const created = await createUserViaApi(request, {
       name: original.name,
       email: original.email,
-      roleId: roleLabelToId(original.roleLabel),
+      roleId: originalRoleCreated.id,
       status: original.status,
     });
     trackUserForCleanup(created.id);
 
     const updated = buildUser({
       name: `Edit ${original.name}`,
-      roleLabel: 'Viewer',
+      roleLabel: updatedRole.name,
       status: 'inactive',
     });
 
@@ -74,14 +86,18 @@ test.describe('Users CRUD', () => {
     });
   });
 
-  test('deletes an existing user', async ({ usersPage, request }) => {
+  test('deletes an existing user', async ({ usersPage, trackRoleForCleanup, request }) => {
     // No trackUserForCleanup here on purpose — deleting the user via the UI
     // IS the thing under test, so there's nothing left to clean up afterward.
-    const user = buildUser();
+    const role = buildRole();
+    const createdRole = await createRoleViaApi(request, role);
+    trackRoleForCleanup(createdRole.id);
+
+    const user = buildUser({ roleLabel: role.name });
     await createUserViaApi(request, {
       name: user.name,
       email: user.email,
-      roleId: roleLabelToId(user.roleLabel),
+      roleId: createdRole.id,
       status: user.status,
     });
 
