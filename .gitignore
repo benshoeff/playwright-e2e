@@ -5,5 +5,4 @@ dist/
 *.log
 test-results/
 playwright-report/
-dashboard/dashboard-data/
 .DS_Store
