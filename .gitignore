@@ -3,3 +3,7 @@ node_modules/
 .env.local
 dist/
 *.log
+test-results/
+playwright-report/
+dashboard/dashboard-data/
+.DS_Store
