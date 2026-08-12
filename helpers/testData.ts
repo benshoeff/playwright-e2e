@@ -40,6 +40,16 @@ export interface CreatePermissionApiPayload {
   description: string;
 }
 
+export interface CategoryFormData {
+  name: string;
+  description: string;
+}
+
+export interface CreateCategoryApiPayload {
+  name: string;
+  description: string;
+}
+
 let counter = 0;
 
 // roleLabel is required so tests never silently fall back to a hardcoded role.
@@ -78,6 +88,17 @@ export function buildPermission(overrides: Partial<PermissionFormData> = {}): Pe
     name: `Permission ${uniqueId}`,
     resource: 'reports',
     action: 'read',
+    description: `Description for ${uniqueId}`,
+    ...overrides,
+  };
+}
+
+export function buildCategory(overrides: Partial<CategoryFormData> = {}): CategoryFormData {
+  counter += 1;
+  const uniqueId = `${Date.now()}_${counter}`;
+
+  return {
+    name: `Category ${uniqueId}`,
     description: `Description for ${uniqueId}`,
     ...overrides,
   };

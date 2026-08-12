@@ -1,5 +1,10 @@
 import { APIRequestContext } from '@playwright/test';
-import { CreatePermissionApiPayload, CreateRoleApiPayload, CreateUserApiPayload } from './testData';
+import {
+  CreateCategoryApiPayload,
+  CreatePermissionApiPayload,
+  CreateRoleApiPayload,
+  CreateUserApiPayload,
+} from './testData';
 
 // Relies on `baseURL` from playwright.config.ts, so no hardcoded host here.
 
@@ -45,5 +50,20 @@ export async function deletePermissionViaApi(request: APIRequestContext, id: str
   const response = await request.delete(`/api/permissions?id=${id}`);
   if (!response.ok()) {
     throw new Error(`Failed to delete permission via API: ${response.status()} ${await response.text()}`);
+  }
+}
+
+export async function createCategoryViaApi(request: APIRequestContext, data: CreateCategoryApiPayload) {
+  const response = await request.post('/api/categories', { data });
+  if (!response.ok()) {
+    throw new Error(`Failed to create category via API: ${response.status()} ${await response.text()}`);
+  }
+  return response.json();
+}
+
+export async function deleteCategoryViaApi(request: APIRequestContext, id: string) {
+  const response = await request.delete(`/api/categories?id=${id}`);
+  if (!response.ok()) {
+    throw new Error(`Failed to delete category via API: ${response.status()} ${await response.text()}`);
   }
 }
