@@ -2,6 +2,8 @@ import { APIRequestContext } from '@playwright/test';
 import {
   CreateCategoryApiPayload,
   CreatePermissionApiPayload,
+  CreatePostApiPayload,
+  CreateProductApiPayload,
   CreateRoleApiPayload,
   CreateUserApiPayload,
 } from './testData';
@@ -65,5 +67,35 @@ export async function deleteCategoryViaApi(request: APIRequestContext, id: strin
   const response = await request.delete(`/api/categories?id=${id}`);
   if (!response.ok()) {
     throw new Error(`Failed to delete category via API: ${response.status()} ${await response.text()}`);
+  }
+}
+
+export async function createProductViaApi(request: APIRequestContext, data: CreateProductApiPayload) {
+  const response = await request.post('/api/products', { data });
+  if (!response.ok()) {
+    throw new Error(`Failed to create product via API: ${response.status()} ${await response.text()}`);
+  }
+  return response.json();
+}
+
+export async function deleteProductViaApi(request: APIRequestContext, id: string) {
+  const response = await request.delete(`/api/products?id=${id}`);
+  if (!response.ok()) {
+    throw new Error(`Failed to delete product via API: ${response.status()} ${await response.text()}`);
+  }
+}
+
+export async function createPostViaApi(request: APIRequestContext, data: CreatePostApiPayload) {
+  const response = await request.post('/api/posts', { data });
+  if (!response.ok()) {
+    throw new Error(`Failed to create post via API: ${response.status()} ${await response.text()}`);
+  }
+  return response.json();
+}
+
+export async function deletePostViaApi(request: APIRequestContext, id: string) {
+  const response = await request.delete(`/api/posts?id=${id}`);
+  if (!response.ok()) {
+    throw new Error(`Failed to delete post via API: ${response.status()} ${await response.text()}`);
   }
 }
