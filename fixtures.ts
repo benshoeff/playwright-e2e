@@ -3,13 +3,24 @@ import { UsersPage } from './pages/UsersPage';
 import { RolesPage } from './pages/RolesPage';
 import { PermissionsPage } from './pages/PermissionsPage';
 import { CategoriesPage } from './pages/CategoriesPage';
-import { deleteUserViaApi, deleteRoleViaApi, deletePermissionViaApi, deleteCategoryViaApi } from './helpers/api';
+import { ProductsPage } from './pages/ProductsPage';
+import { PostsPage } from './pages/PostsPage';
+import {
+  deleteUserViaApi,
+  deleteRoleViaApi,
+  deletePermissionViaApi,
+  deleteCategoryViaApi,
+  deleteProductViaApi,
+  deletePostViaApi,
+} from './helpers/api';
 
 type Fixtures = {
   usersPage: UsersPage;
   rolesPage: RolesPage;
   permissionsPage: PermissionsPage;
   categoriesPage: CategoriesPage;
+  productsPage: ProductsPage;
+  postsPage: PostsPage;
 
   // Call this with an id whenever a test creates a user (via UI or API).
   // Every id collected here gets deleted automatically after the test,
@@ -24,6 +35,12 @@ type Fixtures = {
 
   // Same pattern, for categories.
   trackCategoryForCleanup: (id: string) => void;
+
+  // Same pattern, for products.
+  trackProductForCleanup: (id: string) => void;
+
+  // Same pattern, for posts.
+  trackPostForCleanup: (id: string) => void;
 };
 
 export const test = base.extend<Fixtures>({
@@ -41,6 +58,14 @@ export const test = base.extend<Fixtures>({
 
   categoriesPage: async ({ page }, use) => {
     await use(new CategoriesPage(page));
+  },
+
+  productsPage: async ({ page }, use) => {
+    await use(new ProductsPage(page));
+  },
+
+  postsPage: async ({ page }, use) => {
+    await use(new PostsPage(page));
   },
 
   trackUserForCleanup: async ({ request }, use) => {
@@ -94,6 +119,34 @@ export const test = base.extend<Fixtures>({
 
     for (const id of createdIds) {
       await deleteCategoryViaApi(request, id).catch(() => {
+        // Best-effort cleanup — don't fail the test run over a cleanup issue.
+      });
+    }
+  },
+
+  trackProductForCleanup: async ({ request }, use) => {
+    const createdIds: string[] = [];
+
+    await use((id: string) => {
+      createdIds.push(id);
+    });
+
+    for (const id of createdIds) {
+      await deleteProductViaApi(request, id).catch(() => {
+        // Best-effort cleanup — don't fail the test run over a cleanup issue.
+      });
+    }
+  },
+
+  trackPostForCleanup: async ({ request }, use) => {
+    const createdIds: string[] = [];
+
+    await use((id: string) => {
+      createdIds.push(id);
+    });
+
+    for (const id of createdIds) {
+      await deletePostViaApi(request, id).catch(() => {
         // Best-effort cleanup — don't fail the test run over a cleanup issue.
       });
     }
