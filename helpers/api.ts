@@ -5,6 +5,7 @@ import {
   CreatePostApiPayload,
   CreateProductApiPayload,
   CreateRoleApiPayload,
+  CreateTaskApiPayload,
   CreateUserApiPayload,
 } from './testData';
 
@@ -97,5 +98,20 @@ export async function deletePostViaApi(request: APIRequestContext, id: string) {
   const response = await request.delete(`/api/posts?id=${id}`);
   if (!response.ok()) {
     throw new Error(`Failed to delete post via API: ${response.status()} ${await response.text()}`);
+  }
+}
+
+export async function createTaskViaApi(request: APIRequestContext, data: CreateTaskApiPayload) {
+  const response = await request.post('/api/tasks', { data });
+  if (!response.ok()) {
+    throw new Error(`Failed to create task via API: ${response.status()} ${await response.text()}`);
+  }
+  return response.json();
+}
+
+export async function deleteTaskViaApi(request: APIRequestContext, id: string) {
+  const response = await request.delete(`/api/tasks?id=${id}`);
+  if (!response.ok()) {
+    throw new Error(`Failed to delete task via API: ${response.status()} ${await response.text()}`);
   }
 }
