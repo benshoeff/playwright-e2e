@@ -86,6 +86,27 @@ export interface CreatePostApiPayload {
   status: PostStatus;
 }
 
+export type TaskStatus = 'todo' | 'in_progress' | 'done';
+export type TaskPriority = 'low' | 'medium' | 'high';
+
+export interface TaskFormData {
+  title: string;
+  description: string;
+  status: TaskStatus;
+  priority: TaskPriority;
+  assigneeLabel: string;
+  dueDate: string;
+}
+
+export interface CreateTaskApiPayload {
+  title: string;
+  description: string;
+  status: TaskStatus;
+  priority: TaskPriority;
+  assigneeId: string;
+  dueDate: string;
+}
+
 let counter = 0;
 
 // roleLabel is required so tests never silently fall back to a hardcoded role.
@@ -171,6 +192,23 @@ export function buildPost(overrides: BuildPostOverrides): PostFormData {
     title: `Post ${uniqueId}`,
     content: `Content for ${uniqueId}`,
     status: 'draft',
+    ...overrides,
+  };
+}
+
+// assigneeLabel is required so tests never silently fall back to a hardcoded assignee.
+export type BuildTaskOverrides = Partial<Omit<TaskFormData, 'assigneeLabel'>> & { assigneeLabel: string };
+
+export function buildTask(overrides: BuildTaskOverrides): TaskFormData {
+  counter += 1;
+  const uniqueId = `${Date.now()}_${counter}`;
+
+  return {
+    title: `Task ${uniqueId}`,
+    description: `Description for ${uniqueId}`,
+    status: 'todo',
+    priority: 'low',
+    dueDate: '2025-06-01',
     ...overrides,
   };
 }

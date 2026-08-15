@@ -5,6 +5,7 @@ import { PermissionsPage } from './pages/PermissionsPage';
 import { CategoriesPage } from './pages/CategoriesPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { PostsPage } from './pages/PostsPage';
+import { TasksPage } from './pages/TasksPage';
 import {
   deleteUserViaApi,
   deleteRoleViaApi,
@@ -12,6 +13,7 @@ import {
   deleteCategoryViaApi,
   deleteProductViaApi,
   deletePostViaApi,
+  deleteTaskViaApi,
 } from './helpers/api';
 
 type Fixtures = {
@@ -21,6 +23,7 @@ type Fixtures = {
   categoriesPage: CategoriesPage;
   productsPage: ProductsPage;
   postsPage: PostsPage;
+  tasksPage: TasksPage;
 
   // Call this with an id whenever a test creates a user (via UI or API).
   // Every id collected here gets deleted automatically after the test,
@@ -41,6 +44,9 @@ type Fixtures = {
 
   // Same pattern, for posts.
   trackPostForCleanup: (id: string) => void;
+
+  // Same pattern, for tasks.
+  trackTaskForCleanup: (id: string) => void;
 };
 
 export const test = base.extend<Fixtures>({
@@ -66,6 +72,10 @@ export const test = base.extend<Fixtures>({
 
   postsPage: async ({ page }, use) => {
     await use(new PostsPage(page));
+  },
+
+  tasksPage: async ({ page }, use) => {
+    await use(new TasksPage(page));
   },
 
   trackUserForCleanup: async ({ request }, use) => {
@@ -147,6 +157,20 @@ export const test = base.extend<Fixtures>({
 
     for (const id of createdIds) {
       await deletePostViaApi(request, id).catch(() => {
+        // Best-effort cleanup — don't fail the test run over a cleanup issue.
+      });
+    }
+  },
+
+  trackTaskForCleanup: async ({ request }, use) => {
+    const createdIds: string[] = [];
+
+    await use((id: string) => {
+      createdIds.push(id);
+    });
+
+    for (const id of createdIds) {
+      await deleteTaskViaApi(request, id).catch(() => {
         // Best-effort cleanup — don't fail the test run over a cleanup issue.
       });
     }

@@ -32,7 +32,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright tests against production
-        run: npx playwright test --project=production
+        run: npx playwright test --project=production tests/users.test.ts tests/permissions.test.ts tests/roles.test.ts tests/categories.test.ts tests/posts.test.ts tests/products.test.ts tests/tasks.test.ts
         env:
           DASHBOARD_DATA: '1'
 
