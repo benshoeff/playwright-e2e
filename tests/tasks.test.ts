@@ -1,12 +1,20 @@
-import { test, expect } from '../fixtures';
+import { test } from '../fixtures';
 import { buildRole, buildUser, buildTask } from '../helpers/testData';
-import { createRoleViaApi, createUserViaApi, createTaskViaApi } from '../helpers/api';
+import {
+  createRoleViaApi,
+  createUserViaApi,
+  createTaskViaApi,
+  rolesApiPath,
+  usersApiPath,
+  tasksApiPath,
+} from '../helpers/api';
+import { createViaUi, editViaUi, deleteViaUi } from './crud-helpers';
 
 test.describe('Tasks CRUD', () => {
-  test('creates a new task', async ({ tasksPage, trackRoleForCleanup, trackUserForCleanup, trackTaskForCleanup, request }) => {
+  test('creates a new task', async ({ tasksPage, trackForCleanup, request }) => {
     const role = buildRole();
     const createdRole = await createRoleViaApi(request, role);
-    trackRoleForCleanup(createdRole.id);
+    trackForCleanup(rolesApiPath, createdRole.id);
 
     const assignee = buildUser({ roleLabel: role.name });
     const createdAssignee = await createUserViaApi(request, {
@@ -15,37 +23,28 @@ test.describe('Tasks CRUD', () => {
       roleId: createdRole.id,
       status: assignee.status,
     });
-    trackUserForCleanup(createdAssignee.id);
+    trackForCleanup(usersApiPath, createdAssignee.id);
 
     const task = buildTask({ assigneeLabel: assignee.name });
 
-    await test.step('navigate to the tasks page', async () => {
-      await tasksPage.goto();
-      await tasksPage.openTasksPage();
-    });
-
-    await test.step('fill and submit the create form', async () => {
-      await tasksPage.openCreateForm();
-      await tasksPage.fillForm(task);
-    });
-
-    const created = await tasksPage.submitAndWaitForApi('POST');
-    trackTaskForCleanup(created.id);
-
-    await test.step('verify success toast and row data', async () => {
-      await tasksPage.expectSuccessToast('Task created successfully');
-      await tasksPage.expectRow(task.title, {
+    await createViaUi(tasksPage, {
+      entityLabel: 'tasks',
+      data: task,
+      createdName: task.title,
+      rowData: {
         priority: task.priority,
         status: task.status,
         assigneeLabel: task.assigneeLabel,
-      });
+      },
+      toast: 'Task created successfully',
+      track: (id) => trackForCleanup(tasksApiPath, id),
     });
   });
 
-  test('edits an existing task', async ({ tasksPage, trackRoleForCleanup, trackUserForCleanup, trackTaskForCleanup, request }) => {
+  test('edits an existing task', async ({ tasksPage, trackForCleanup, request }) => {
     const role = buildRole();
     const createdRole = await createRoleViaApi(request, role);
-    trackRoleForCleanup(createdRole.id);
+    trackForCleanup(rolesApiPath, createdRole.id);
 
     const originalAssignee = buildUser({ roleLabel: role.name });
     const originalAssigneeCreated = await createUserViaApi(request, {
@@ -54,7 +53,7 @@ test.describe('Tasks CRUD', () => {
       roleId: createdRole.id,
       status: originalAssignee.status,
     });
-    trackUserForCleanup(originalAssigneeCreated.id);
+    trackForCleanup(usersApiPath, originalAssigneeCreated.id);
 
     const updatedAssignee = buildUser({ roleLabel: role.name });
     const updatedAssigneeCreated = await createUserViaApi(request, {
@@ -63,7 +62,7 @@ test.describe('Tasks CRUD', () => {
       roleId: createdRole.id,
       status: updatedAssignee.status,
     });
-    trackUserForCleanup(updatedAssigneeCreated.id);
+    trackForCleanup(usersApiPath, updatedAssigneeCreated.id);
 
     const original = buildTask({ assigneeLabel: originalAssignee.name });
     const created = await createTaskViaApi(request, {
@@ -74,7 +73,7 @@ test.describe('Tasks CRUD', () => {
       assigneeId: originalAssigneeCreated.id,
       dueDate: original.dueDate,
     });
-    trackTaskForCleanup(created.id);
+    trackForCleanup(tasksApiPath, created.id);
 
     const updated = buildTask({
       title: `Edit ${original.title}`,
@@ -84,41 +83,31 @@ test.describe('Tasks CRUD', () => {
       assigneeLabel: updatedAssignee.name,
     });
 
-    await test.step('navigate to the tasks page', async () => {
-      await tasksPage.goto();
-      await tasksPage.openTasksPage();
-    });
-
-    await test.step('verify the pre-existing row', async () => {
-      await tasksPage.expectRow(original.title, {
+    await editViaUi(tasksPage, {
+      entityLabel: 'tasks',
+      originalName: original.title,
+      originalRowData: {
         priority: original.priority,
         status: original.status,
         assigneeLabel: original.assigneeLabel,
-      });
-    });
-
-    await test.step('edit and submit', async () => {
-      await tasksPage.openEditForm(original.title);
-      await tasksPage.fillForm(updated);
-      await tasksPage.submitButton.click();
-    });
-
-    await test.step('verify success toast and updated row', async () => {
-      await tasksPage.expectSuccessToast('Task updated successfully');
-      await tasksPage.expectRow(updated.title, {
+      },
+      updated,
+      updatedName: updated.title,
+      updatedRowData: {
         priority: updated.priority,
         status: updated.status,
         assigneeLabel: updated.assigneeLabel,
-      });
+      },
+      toast: 'Task updated successfully',
     });
   });
 
-  test('deletes an existing task', async ({ tasksPage, trackRoleForCleanup, trackUserForCleanup, request }) => {
-    // No trackTaskForCleanup here on purpose — deleting the task via the UI
+  test('deletes an existing task', async ({ tasksPage, trackForCleanup, request }) => {
+    // No cleanup for the task on purpose — deleting the task via the UI
     // IS the thing under test, so there's nothing left to clean up afterward.
     const role = buildRole();
     const createdRole = await createRoleViaApi(request, role);
-    trackRoleForCleanup(createdRole.id);
+    trackForCleanup(rolesApiPath, createdRole.id);
 
     const assignee = buildUser({ roleLabel: role.name });
     const createdAssignee = await createUserViaApi(request, {
@@ -127,7 +116,7 @@ test.describe('Tasks CRUD', () => {
       roleId: createdRole.id,
       status: assignee.status,
     });
-    trackUserForCleanup(createdAssignee.id);
+    trackForCleanup(usersApiPath, createdAssignee.id);
 
     const task = buildTask({ assigneeLabel: assignee.name });
     await createTaskViaApi(request, {
@@ -139,26 +128,15 @@ test.describe('Tasks CRUD', () => {
       dueDate: task.dueDate,
     });
 
-    await test.step('navigate to the tasks page', async () => {
-      await tasksPage.goto();
-      await tasksPage.openTasksPage();
-    });
-
-    await test.step('verify the pre-existing row', async () => {
-      await tasksPage.expectRow(task.title, {
+    await deleteViaUi(tasksPage, {
+      entityLabel: 'tasks',
+      name: task.title,
+      rowData: {
         priority: task.priority,
         status: task.status,
         assigneeLabel: task.assigneeLabel,
-      });
-    });
-
-    await test.step('delete via UI', async () => {
-      await tasksPage.deleteTask(task.title);
-      await tasksPage.expectSuccessToast('Task deleted successfully');
-    });
-
-    await test.step('verify the row is gone', async () => {
-      await expect(tasksPage.tasksDataTable).not.toContainText(task.title);
+      },
+      toast: 'Task deleted successfully',
     });
   });
 });

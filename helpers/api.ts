@@ -10,108 +10,84 @@ import {
 } from './testData';
 
 // Relies on `baseURL` from playwright.config.ts, so no hardcoded host here.
+// Shared here so the api helpers, page objects, cleanup fixture and tests all
+// reference the same path.
 
-export async function createUserViaApi(request: APIRequestContext, data: CreateUserApiPayload) {
-  const response = await request.post('/api/users', { data });
+export const usersApiPath = '/api/users';
+export const rolesApiPath = '/api/roles';
+export const permissionsApiPath = '/api/permissions';
+export const categoriesApiPath = '/api/categories';
+export const productsApiPath = '/api/products';
+export const postsApiPath = '/api/posts';
+export const tasksApiPath = '/api/tasks';
+
+async function createViaApi(request: APIRequestContext, path: string, data: unknown) {
+  const response = await request.post(path, { data });
   if (!response.ok()) {
-    throw new Error(`Failed to create user via API: ${response.status()} ${await response.text()}`);
+    throw new Error(`Failed to create via API (${path}): ${response.status()} ${await response.text()}`);
   }
   return response.json();
 }
 
-export async function deleteUserViaApi(request: APIRequestContext, id: string) {
-  const response = await request.delete(`/api/users?id=${id}`);
+export async function deleteViaApi(request: APIRequestContext, path: string, id: string) {
+  const response = await request.delete(`${path}?id=${id}`);
   if (!response.ok()) {
-    throw new Error(`Failed to delete user via API: ${response.status()} ${await response.text()}`);
+    throw new Error(`Failed to delete via API (${path}): ${response.status()} ${await response.text()}`);
   }
 }
 
-export async function createRoleViaApi(request: APIRequestContext, data: CreateRoleApiPayload) {
-  const response = await request.post('/api/roles', { data });
-  if (!response.ok()) {
-    throw new Error(`Failed to create role via API: ${response.status()} ${await response.text()}`);
-  }
-  return response.json();
+export function createUserViaApi(request: APIRequestContext, data: CreateUserApiPayload) {
+  return createViaApi(request, usersApiPath, data);
 }
 
-export async function deleteRoleViaApi(request: APIRequestContext, id: string) {
-  const response = await request.delete(`/api/roles?id=${id}`);
-  if (!response.ok()) {
-    throw new Error(`Failed to delete role via API: ${response.status()} ${await response.text()}`);
-  }
+export function deleteUserViaApi(request: APIRequestContext, id: string) {
+  return deleteViaApi(request, usersApiPath, id);
 }
 
-export async function createPermissionViaApi(request: APIRequestContext, data: CreatePermissionApiPayload) {
-  const response = await request.post('/api/permissions', { data });
-  if (!response.ok()) {
-    throw new Error(`Failed to create permission via API: ${response.status()} ${await response.text()}`);
-  }
-  return response.json();
+export function createRoleViaApi(request: APIRequestContext, data: CreateRoleApiPayload) {
+  return createViaApi(request, rolesApiPath, data);
 }
 
-export async function deletePermissionViaApi(request: APIRequestContext, id: string) {
-  const response = await request.delete(`/api/permissions?id=${id}`);
-  if (!response.ok()) {
-    throw new Error(`Failed to delete permission via API: ${response.status()} ${await response.text()}`);
-  }
+export function deleteRoleViaApi(request: APIRequestContext, id: string) {
+  return deleteViaApi(request, rolesApiPath, id);
 }
 
-export async function createCategoryViaApi(request: APIRequestContext, data: CreateCategoryApiPayload) {
-  const response = await request.post('/api/categories', { data });
-  if (!response.ok()) {
-    throw new Error(`Failed to create category via API: ${response.status()} ${await response.text()}`);
-  }
-  return response.json();
+export function createPermissionViaApi(request: APIRequestContext, data: CreatePermissionApiPayload) {
+  return createViaApi(request, permissionsApiPath, data);
 }
 
-export async function deleteCategoryViaApi(request: APIRequestContext, id: string) {
-  const response = await request.delete(`/api/categories?id=${id}`);
-  if (!response.ok()) {
-    throw new Error(`Failed to delete category via API: ${response.status()} ${await response.text()}`);
-  }
+export function deletePermissionViaApi(request: APIRequestContext, id: string) {
+  return deleteViaApi(request, permissionsApiPath, id);
 }
 
-export async function createProductViaApi(request: APIRequestContext, data: CreateProductApiPayload) {
-  const response = await request.post('/api/products', { data });
-  if (!response.ok()) {
-    throw new Error(`Failed to create product via API: ${response.status()} ${await response.text()}`);
-  }
-  return response.json();
+export function createCategoryViaApi(request: APIRequestContext, data: CreateCategoryApiPayload) {
+  return createViaApi(request, categoriesApiPath, data);
 }
 
-export async function deleteProductViaApi(request: APIRequestContext, id: string) {
-  const response = await request.delete(`/api/products?id=${id}`);
-  if (!response.ok()) {
-    throw new Error(`Failed to delete product via API: ${response.status()} ${await response.text()}`);
-  }
+export function deleteCategoryViaApi(request: APIRequestContext, id: string) {
+  return deleteViaApi(request, categoriesApiPath, id);
 }
 
-export async function createPostViaApi(request: APIRequestContext, data: CreatePostApiPayload) {
-  const response = await request.post('/api/posts', { data });
-  if (!response.ok()) {
-    throw new Error(`Failed to create post via API: ${response.status()} ${await response.text()}`);
-  }
-  return response.json();
+export function createProductViaApi(request: APIRequestContext, data: CreateProductApiPayload) {
+  return createViaApi(request, productsApiPath, data);
 }
 
-export async function deletePostViaApi(request: APIRequestContext, id: string) {
-  const response = await request.delete(`/api/posts?id=${id}`);
-  if (!response.ok()) {
-    throw new Error(`Failed to delete post via API: ${response.status()} ${await response.text()}`);
-  }
+export function deleteProductViaApi(request: APIRequestContext, id: string) {
+  return deleteViaApi(request, productsApiPath, id);
 }
 
-export async function createTaskViaApi(request: APIRequestContext, data: CreateTaskApiPayload) {
-  const response = await request.post('/api/tasks', { data });
-  if (!response.ok()) {
-    throw new Error(`Failed to create task via API: ${response.status()} ${await response.text()}`);
-  }
-  return response.json();
+export function createPostViaApi(request: APIRequestContext, data: CreatePostApiPayload) {
+  return createViaApi(request, postsApiPath, data);
 }
 
-export async function deleteTaskViaApi(request: APIRequestContext, id: string) {
-  const response = await request.delete(`/api/tasks?id=${id}`);
-  if (!response.ok()) {
-    throw new Error(`Failed to delete task via API: ${response.status()} ${await response.text()}`);
-  }
+export function deletePostViaApi(request: APIRequestContext, id: string) {
+  return deleteViaApi(request, postsApiPath, id);
+}
+
+export function createTaskViaApi(request: APIRequestContext, data: CreateTaskApiPayload) {
+  return createViaApi(request, tasksApiPath, data);
+}
+
+export function deleteTaskViaApi(request: APIRequestContext, id: string) {
+  return deleteViaApi(request, tasksApiPath, id);
 }

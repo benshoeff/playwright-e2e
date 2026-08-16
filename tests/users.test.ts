@@ -1,46 +1,38 @@
-import { test, expect } from '../fixtures';
+import { test } from '../fixtures';
 import { buildUser, buildRole } from '../helpers/testData';
-import { createUserViaApi, createRoleViaApi } from '../helpers/api';
+import { createUserViaApi, createRoleViaApi, usersApiPath, rolesApiPath } from '../helpers/api';
+import { createViaUi, editViaUi, deleteViaUi } from './crud-helpers';
 
 test.describe('Users CRUD', () => {
-  test('creates a new user', async ({ usersPage, trackRoleForCleanup, trackUserForCleanup, request }) => {
+  test('creates a new user', async ({ usersPage, trackForCleanup, request }) => {
     const role = buildRole();
     const createdRole = await createRoleViaApi(request, role);
-    trackRoleForCleanup(createdRole.id);
+    trackForCleanup(rolesApiPath, createdRole.id);
 
     const user = buildUser({ roleLabel: role.name });
 
-    await test.step('navigate to the users page', async () => {
-      await usersPage.goto();
-      await usersPage.openUsersPage();
-    });
-
-    await test.step('fill and submit the create form', async () => {
-      await usersPage.openCreateForm();
-      await usersPage.fillForm(user);
-    });
-
-    const created = await usersPage.submitAndWaitForApi('POST');
-    trackUserForCleanup(created.id);
-
-    await test.step('verify success toast and row data', async () => {
-      await usersPage.expectSuccessToast('User created successfully');
-      await usersPage.expectRow(user.name, {
+    await createViaUi(usersPage, {
+      entityLabel: 'users',
+      data: user,
+      createdName: user.name,
+      rowData: {
         email: user.email,
         roleLabel: user.roleLabel,
         status: user.status,
-      });
+      },
+      toast: 'User created successfully',
+      track: (id) => trackForCleanup(usersApiPath, id),
     });
   });
 
-  test('edits an existing user', async ({ usersPage, trackRoleForCleanup, trackUserForCleanup, request }) => {
+  test('edits an existing user', async ({ usersPage, trackForCleanup, request }) => {
     const originalRole = buildRole();
     const originalRoleCreated = await createRoleViaApi(request, originalRole);
-    trackRoleForCleanup(originalRoleCreated.id);
+    trackForCleanup(rolesApiPath, originalRoleCreated.id);
 
     const updatedRole = buildRole();
     const updatedRoleCreated = await createRoleViaApi(request, updatedRole);
-    trackRoleForCleanup(updatedRoleCreated.id);
+    trackForCleanup(rolesApiPath, updatedRoleCreated.id);
 
     const original = buildUser({ roleLabel: originalRole.name });
     const created = await createUserViaApi(request, {
@@ -49,7 +41,7 @@ test.describe('Users CRUD', () => {
       roleId: originalRoleCreated.id,
       status: original.status,
     });
-    trackUserForCleanup(created.id);
+    trackForCleanup(usersApiPath, created.id);
 
     const updated = buildUser({
       name: `Edit ${original.name}`,
@@ -57,41 +49,31 @@ test.describe('Users CRUD', () => {
       status: 'inactive',
     });
 
-    await test.step('navigate to the users page', async () => {
-      await usersPage.goto();
-      await usersPage.openUsersPage();
-    });
-
-    await test.step('verify the pre-existing row', async () => {
-      await usersPage.expectRow(original.name, {
+    await editViaUi(usersPage, {
+      entityLabel: 'users',
+      originalName: original.name,
+      originalRowData: {
         email: original.email,
         roleLabel: original.roleLabel,
         status: original.status,
-      });
-    });
-
-    await test.step('edit and submit', async () => {
-      await usersPage.openEditForm(original.name);
-      await usersPage.fillForm(updated);
-      await usersPage.submitButton.click();
-    });
-
-    await test.step('verify success toast and updated row', async () => {
-      await usersPage.expectSuccessToast('User updated successfully');
-      await usersPage.expectRow(updated.name, {
+      },
+      updated,
+      updatedName: updated.name,
+      updatedRowData: {
         email: updated.email,
         roleLabel: updated.roleLabel,
         status: updated.status,
-      });
+      },
+      toast: 'User updated successfully',
     });
   });
 
-  test('deletes an existing user', async ({ usersPage, trackRoleForCleanup, request }) => {
-    // No trackUserForCleanup here on purpose — deleting the user via the UI
+  test('deletes an existing user', async ({ usersPage, trackForCleanup, request }) => {
+    // No cleanup for the user on purpose — deleting the user via the UI
     // IS the thing under test, so there's nothing left to clean up afterward.
     const role = buildRole();
     const createdRole = await createRoleViaApi(request, role);
-    trackRoleForCleanup(createdRole.id);
+    trackForCleanup(rolesApiPath, createdRole.id);
 
     const user = buildUser({ roleLabel: role.name });
     await createUserViaApi(request, {
@@ -101,26 +83,15 @@ test.describe('Users CRUD', () => {
       status: user.status,
     });
 
-    await test.step('navigate to the users page', async () => {
-      await usersPage.goto();
-      await usersPage.openUsersPage();
-    });
-
-    await test.step('verify the pre-existing row', async () => {
-      await usersPage.expectRow(user.name, {
+    await deleteViaUi(usersPage, {
+      entityLabel: 'users',
+      name: user.name,
+      rowData: {
         email: user.email,
         roleLabel: user.roleLabel,
         status: user.status,
-      });
-    });
-
-    await test.step('delete via UI', async () => {
-      await usersPage.deleteUser(user.name);
-      await usersPage.expectSuccessToast('User deleted successfully');
-    });
-
-    await test.step('verify the row is gone', async () => {
-      await expect(usersPage.usersDataTable).not.toContainText(user.name);
+      },
+      toast: 'User deleted successfully',
     });
   });
 });

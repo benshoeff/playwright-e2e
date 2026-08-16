@@ -109,14 +109,20 @@ export interface CreateTaskApiPayload {
 
 let counter = 0;
 
+// Called fresh inside each test -> no shared/global state between tests,
+// no risk of collisions if tests run in parallel.
+function nextUniqueId(): string {
+  counter += 1;
+  return `${Date.now()}_${counter}`;
+}
+
 // roleLabel is required so tests never silently fall back to a hardcoded role.
 export type BuildUserOverrides = Partial<Omit<UserFormData, 'roleLabel'>> & { roleLabel: string };
 
 // Called fresh inside each test -> no shared/global state between tests,
 // no risk of collisions if tests run in parallel.
 export function buildUser(overrides: BuildUserOverrides): UserFormData {
-  counter += 1;
-  const uniqueId = `${Date.now()}_${counter}`;
+  const uniqueId = nextUniqueId();
 
   return {
     name: `User ${uniqueId}`,
@@ -127,8 +133,7 @@ export function buildUser(overrides: BuildUserOverrides): UserFormData {
 }
 
 export function buildRole(overrides: Partial<RoleFormData> = {}): RoleFormData {
-  counter += 1;
-  const uniqueId = `${Date.now()}_${counter}`;
+  const uniqueId = nextUniqueId();
 
   return {
     name: `Role ${uniqueId}`,
@@ -138,8 +143,7 @@ export function buildRole(overrides: Partial<RoleFormData> = {}): RoleFormData {
 }
 
 export function buildPermission(overrides: Partial<PermissionFormData> = {}): PermissionFormData {
-  counter += 1;
-  const uniqueId = `${Date.now()}_${counter}`;
+  const uniqueId = nextUniqueId();
 
   return {
     name: `Permission ${uniqueId}`,
@@ -151,8 +155,7 @@ export function buildPermission(overrides: Partial<PermissionFormData> = {}): Pe
 }
 
 export function buildCategory(overrides: Partial<CategoryFormData> = {}): CategoryFormData {
-  counter += 1;
-  const uniqueId = `${Date.now()}_${counter}`;
+  const uniqueId = nextUniqueId();
 
   return {
     name: `Category ${uniqueId}`,
@@ -165,8 +168,7 @@ export function buildCategory(overrides: Partial<CategoryFormData> = {}): Catego
 export type BuildProductOverrides = Partial<Omit<ProductFormData, 'categoryLabel'>> & { categoryLabel: string };
 
 export function buildProduct(overrides: BuildProductOverrides): ProductFormData {
-  counter += 1;
-  const uniqueId = `${Date.now()}_${counter}`;
+  const uniqueId = nextUniqueId();
 
   return {
     name: `Product ${uniqueId}`,
@@ -185,8 +187,7 @@ export type BuildPostOverrides = Partial<Omit<PostFormData, 'authorLabel' | 'cat
 };
 
 export function buildPost(overrides: BuildPostOverrides): PostFormData {
-  counter += 1;
-  const uniqueId = `${Date.now()}_${counter}`;
+  const uniqueId = nextUniqueId();
 
   return {
     title: `Post ${uniqueId}`,
@@ -200,8 +201,7 @@ export function buildPost(overrides: BuildPostOverrides): PostFormData {
 export type BuildTaskOverrides = Partial<Omit<TaskFormData, 'assigneeLabel'>> & { assigneeLabel: string };
 
 export function buildTask(overrides: BuildTaskOverrides): TaskFormData {
-  counter += 1;
-  const uniqueId = `${Date.now()}_${counter}`;
+  const uniqueId = nextUniqueId();
 
   return {
     title: `Task ${uniqueId}`,
