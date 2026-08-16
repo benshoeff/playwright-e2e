@@ -9,7 +9,8 @@
     "test": "playwright test",
     "test:local": "playwright test --project=local",
     "test:production": "playwright test --project=production",
-    "test:report": "playwright show-report"
+    "test:report": "playwright show-report",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",

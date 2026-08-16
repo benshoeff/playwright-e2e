@@ -1,35 +1,27 @@
-import { test, expect } from '../fixtures';
+import { test } from '../fixtures';
 import { buildPermission } from '../helpers/testData';
-import { createPermissionViaApi } from '../helpers/api';
+import { createPermissionViaApi, permissionsApiPath } from '../helpers/api';
+import { createViaUi, editViaUi, deleteViaUi } from './crud-helpers';
 
 test.describe('Permissions CRUD', () => {
-  test('creates a new permission', async ({ permissionsPage, trackPermissionForCleanup }) => {
+  test('creates a new permission', async ({ permissionsPage, trackForCleanup }) => {
     const permission = buildPermission();
 
-    await test.step('navigate to the permissions page', async () => {
-      await permissionsPage.goto();
-      await permissionsPage.openPermissionsPage();
-    });
-
-    await test.step('fill and submit the create form', async () => {
-      await permissionsPage.openCreateForm();
-      await permissionsPage.fillForm(permission);
-    });
-
-    const created = await permissionsPage.submitAndWaitForApi('POST');
-    trackPermissionForCleanup(created.id);
-
-    await test.step('verify success toast and row data', async () => {
-      await permissionsPage.expectSuccessToast('Permission created successfully');
-      await permissionsPage.expectRow(permission.name, {
+    await createViaUi(permissionsPage, {
+      entityLabel: 'permissions',
+      data: permission,
+      createdName: permission.name,
+      rowData: {
         resource: permission.resource,
         action: permission.action,
         description: permission.description,
-      });
+      },
+      toast: 'Permission created successfully',
+      track: (id) => trackForCleanup(permissionsApiPath, id),
     });
   });
 
-  test('edits an existing permission', async ({ permissionsPage, trackPermissionForCleanup, request }) => {
+  test('edits an existing permission', async ({ permissionsPage, trackForCleanup, request }) => {
     const original = buildPermission();
     const created = await createPermissionViaApi(request, {
       name: original.name,
@@ -37,7 +29,7 @@ test.describe('Permissions CRUD', () => {
       action: original.action,
       description: original.description,
     });
-    trackPermissionForCleanup(created.id);
+    trackForCleanup(permissionsApiPath, created.id);
 
     const updated = buildPermission({
       name: `Edit ${original.name}`,
@@ -45,37 +37,27 @@ test.describe('Permissions CRUD', () => {
       description: `Updated ${original.description}`,
     });
 
-    await test.step('navigate to the permissions page', async () => {
-      await permissionsPage.goto();
-      await permissionsPage.openPermissionsPage();
-    });
-
-    await test.step('verify the pre-existing row', async () => {
-      await permissionsPage.expectRow(original.name, {
+    await editViaUi(permissionsPage, {
+      entityLabel: 'permissions',
+      originalName: original.name,
+      originalRowData: {
         resource: original.resource,
         action: original.action,
         description: original.description,
-      });
-    });
-
-    await test.step('edit and submit', async () => {
-      await permissionsPage.openEditForm(original.name);
-      await permissionsPage.fillForm(updated);
-      await permissionsPage.submitButton.click();
-    });
-
-    await test.step('verify success toast and updated row', async () => {
-      await permissionsPage.expectSuccessToast('Permission updated successfully');
-      await permissionsPage.expectRow(updated.name, {
+      },
+      updated,
+      updatedName: updated.name,
+      updatedRowData: {
         resource: updated.resource,
         action: updated.action,
         description: updated.description,
-      });
+      },
+      toast: 'Permission updated successfully',
     });
   });
 
   test('deletes an existing permission', async ({ permissionsPage, request }) => {
-    // No trackPermissionForCleanup here on purpose — deleting the permission via the UI
+    // No cleanup for the permission on purpose — deleting the permission via the UI
     // IS the thing under test, so there's nothing left to clean up afterward.
     const permission = buildPermission();
     await createPermissionViaApi(request, {
@@ -85,26 +67,15 @@ test.describe('Permissions CRUD', () => {
       description: permission.description,
     });
 
-    await test.step('navigate to the permissions page', async () => {
-      await permissionsPage.goto();
-      await permissionsPage.openPermissionsPage();
-    });
-
-    await test.step('verify the pre-existing row', async () => {
-      await permissionsPage.expectRow(permission.name, {
+    await deleteViaUi(permissionsPage, {
+      entityLabel: 'permissions',
+      name: permission.name,
+      rowData: {
         resource: permission.resource,
         action: permission.action,
         description: permission.description,
-      });
-    });
-
-    await test.step('delete via UI', async () => {
-      await permissionsPage.deletePermission(permission.name);
-      await permissionsPage.expectSuccessToast('Permission deleted successfully');
-    });
-
-    await test.step('verify the row is gone', async () => {
-      await expect(permissionsPage.permissionsDataTable).not.toContainText(permission.name);
+      },
+      toast: 'Permission deleted successfully',
     });
   });
 });

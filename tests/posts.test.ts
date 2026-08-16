@@ -1,12 +1,22 @@
 import { test, expect } from '../fixtures';
 import { buildRole, buildUser, buildCategory, buildPost } from '../helpers/testData';
-import { createRoleViaApi, createUserViaApi, createCategoryViaApi, createPostViaApi } from '../helpers/api';
+import {
+  createRoleViaApi,
+  createUserViaApi,
+  createCategoryViaApi,
+  createPostViaApi,
+  rolesApiPath,
+  usersApiPath,
+  categoriesApiPath,
+  postsApiPath,
+} from '../helpers/api';
+import { createViaUi, editViaUi, deleteViaUi } from './crud-helpers';
 
 test.describe('Posts CRUD', () => {
-  test('creates a new post', async ({ postsPage, trackRoleForCleanup, trackUserForCleanup, trackCategoryForCleanup, trackPostForCleanup, request }) => {
+  test('creates a new post', async ({ postsPage, trackForCleanup, request }) => {
     const role = buildRole();
     const createdRole = await createRoleViaApi(request, role);
-    trackRoleForCleanup(createdRole.id);
+    trackForCleanup(rolesApiPath, createdRole.id);
 
     const author = buildUser({ roleLabel: role.name });
     const createdAuthor = await createUserViaApi(request, {
@@ -15,43 +25,34 @@ test.describe('Posts CRUD', () => {
       roleId: createdRole.id,
       status: author.status,
     });
-    trackUserForCleanup(createdAuthor.id);
+    trackForCleanup(usersApiPath, createdAuthor.id);
 
     const category = buildCategory();
     const createdCategory = await createCategoryViaApi(request, category);
-    trackCategoryForCleanup(createdCategory.id);
+    trackForCleanup(categoriesApiPath, createdCategory.id);
 
     const post = buildPost({
       authorLabel: author.name,
       categoryLabel: category.name,
     });
 
-    await test.step('navigate to the posts page', async () => {
-      await postsPage.goto();
-      await postsPage.openPostsPage();
-    });
-
-    await test.step('fill and submit the create form', async () => {
-      await postsPage.openCreateForm();
-      await postsPage.fillForm(post);
-    });
-
-    const created = await postsPage.submitAndWaitForApi('POST');
-    trackPostForCleanup(created.id);
-
-    await test.step('verify success toast and row data', async () => {
-      await postsPage.expectSuccessToast('Post created successfully');
-      await postsPage.expectRow(post.title, {
+    await createViaUi(postsPage, {
+      entityLabel: 'posts',
+      data: post,
+      createdName: post.title,
+      rowData: {
         authorLabel: post.authorLabel,
         status: post.status,
-      });
+      },
+      toast: 'Post created successfully',
+      track: (id) => trackForCleanup(postsApiPath, id),
     });
   });
 
-  test('edits an existing post', async ({ postsPage, trackRoleForCleanup, trackUserForCleanup, trackCategoryForCleanup, trackPostForCleanup, request }) => {
+  test('edits an existing post', async ({ postsPage, trackForCleanup, request }) => {
     const role = buildRole();
     const createdRole = await createRoleViaApi(request, role);
-    trackRoleForCleanup(createdRole.id);
+    trackForCleanup(rolesApiPath, createdRole.id);
 
     const author = buildUser({ roleLabel: role.name });
     const createdAuthor = await createUserViaApi(request, {
@@ -60,15 +61,15 @@ test.describe('Posts CRUD', () => {
       roleId: createdRole.id,
       status: author.status,
     });
-    trackUserForCleanup(createdAuthor.id);
+    trackForCleanup(usersApiPath, createdAuthor.id);
 
     const originalCategory = buildCategory();
     const originalCategoryCreated = await createCategoryViaApi(request, originalCategory);
-    trackCategoryForCleanup(originalCategoryCreated.id);
+    trackForCleanup(categoriesApiPath, originalCategoryCreated.id);
 
     const updatedCategory = buildCategory();
     const updatedCategoryCreated = await createCategoryViaApi(request, updatedCategory);
-    trackCategoryForCleanup(updatedCategoryCreated.id);
+    trackForCleanup(categoriesApiPath, updatedCategoryCreated.id);
 
     const original = buildPost({
       authorLabel: author.name,
@@ -81,7 +82,7 @@ test.describe('Posts CRUD', () => {
       categoryId: originalCategoryCreated.id,
       status: original.status,
     });
-    trackPostForCleanup(created.id);
+    trackForCleanup(postsApiPath, created.id);
 
     const updated = buildPost({
       title: `Edit ${original.title}`,
@@ -91,40 +92,33 @@ test.describe('Posts CRUD', () => {
       status: 'published',
     });
 
-    await test.step('navigate to the posts page', async () => {
-      await postsPage.goto();
-      await postsPage.openPostsPage();
-    });
-
-    await test.step('verify the pre-existing row', async () => {
-      await postsPage.expectRow(original.title, {
+    await editViaUi(postsPage, {
+      entityLabel: 'posts',
+      originalName: original.title,
+      originalRowData: {
         authorLabel: original.authorLabel,
         status: original.status,
-      });
-    });
-
-    await test.step('edit and submit', async () => {
-      await postsPage.openEditForm(original.title);
-      await postsPage.fillForm(updated);
-      await postsPage.submitButton.click();
-    });
-
-    await test.step('verify success toast and updated row', async () => {
-      await postsPage.expectSuccessToast('Post updated successfully');
-      await postsPage.expectRow(updated.title, {
+      },
+      updated,
+      updatedName: updated.title,
+      updatedRowData: {
         authorLabel: updated.authorLabel,
         status: updated.status,
-      });
+      },
+      toast: 'Post updated successfully',
+    });
+
+    await test.step('verify the post was published', async () => {
       await expect(postsPage.row(updated.title).getByTestId('data-publishedAt')).not.toHaveText('—');
     });
   });
 
-  test('deletes an existing post', async ({ postsPage, trackRoleForCleanup, trackUserForCleanup, trackCategoryForCleanup, request }) => {
-    // No trackPostForCleanup here on purpose — deleting the post via the UI
+  test('deletes an existing post', async ({ postsPage, trackForCleanup, request }) => {
+    // No cleanup for the post on purpose — deleting the post via the UI
     // IS the thing under test, so there's nothing left to clean up afterward.
     const role = buildRole();
     const createdRole = await createRoleViaApi(request, role);
-    trackRoleForCleanup(createdRole.id);
+    trackForCleanup(rolesApiPath, createdRole.id);
 
     const author = buildUser({ roleLabel: role.name });
     const createdAuthor = await createUserViaApi(request, {
@@ -133,11 +127,11 @@ test.describe('Posts CRUD', () => {
       roleId: createdRole.id,
       status: author.status,
     });
-    trackUserForCleanup(createdAuthor.id);
+    trackForCleanup(usersApiPath, createdAuthor.id);
 
     const category = buildCategory();
     const createdCategory = await createCategoryViaApi(request, category);
-    trackCategoryForCleanup(createdCategory.id);
+    trackForCleanup(categoriesApiPath, createdCategory.id);
 
     const post = buildPost({
       authorLabel: author.name,
@@ -151,25 +145,14 @@ test.describe('Posts CRUD', () => {
       status: post.status,
     });
 
-    await test.step('navigate to the posts page', async () => {
-      await postsPage.goto();
-      await postsPage.openPostsPage();
-    });
-
-    await test.step('verify the pre-existing row', async () => {
-      await postsPage.expectRow(post.title, {
+    await deleteViaUi(postsPage, {
+      entityLabel: 'posts',
+      name: post.title,
+      rowData: {
         authorLabel: post.authorLabel,
         status: post.status,
-      });
-    });
-
-    await test.step('delete via UI', async () => {
-      await postsPage.deletePost(post.title);
-      await postsPage.expectSuccessToast('Post deleted successfully');
-    });
-
-    await test.step('verify the row is gone', async () => {
-      await expect(postsPage.postsDataTable).not.toContainText(post.title);
+      },
+      toast: 'Post deleted successfully',
     });
   });
 });
