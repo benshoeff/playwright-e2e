@@ -3,6 +3,7 @@ import { UsersPage } from './pages/UsersPage';
 import { RolesPage } from './pages/RolesPage';
 import { PermissionsPage } from './pages/PermissionsPage';
 import { CategoriesPage } from './pages/CategoriesPage';
+import { CustomersPage } from './pages/CustomersPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { PostsPage } from './pages/PostsPage';
 import { TasksPage } from './pages/TasksPage';
@@ -13,6 +14,7 @@ type Fixtures = {
   rolesPage: RolesPage;
   permissionsPage: PermissionsPage;
   categoriesPage: CategoriesPage;
+  customersPage: CustomersPage;
   productsPage: ProductsPage;
   postsPage: PostsPage;
   tasksPage: TasksPage;
@@ -39,6 +41,10 @@ export const test = base.extend<Fixtures>({
 
   categoriesPage: async ({ page }, use) => {
     await use(new CategoriesPage(page));
+  },
+
+  customersPage: async ({ page }, use) => {
+    await use(new CustomersPage(page));
   },
 
   productsPage: async ({ page }, use) => {

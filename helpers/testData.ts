@@ -50,6 +50,24 @@ export interface CreateCategoryApiPayload {
   description: string;
 }
 
+export type CustomerStatus = 'active' | 'inactive';
+
+export interface CustomerFormData {
+  name: string;
+  email: string;
+  phone: string;
+  city: string;
+  status: CustomerStatus;
+}
+
+export interface CreateCustomerApiPayload {
+  name: string;
+  email: string;
+  phone: string;
+  city: string;
+  status: CustomerStatus;
+}
+
 export type ProductStatus = 'active' | 'inactive' | 'discontinued';
 
 export interface ProductFormData {
@@ -160,6 +178,19 @@ export function buildCategory(overrides: Partial<CategoryFormData> = {}): Catego
   return {
     name: `Category ${uniqueId}`,
     description: `Description for ${uniqueId}`,
+    ...overrides,
+  };
+}
+
+export function buildCustomer(overrides: Partial<CustomerFormData> = {}): CustomerFormData {
+  const uniqueId = nextUniqueId();
+
+  return {
+    name: `Customer ${uniqueId}`,
+    email: `customer+${uniqueId}@example.com`,
+    phone: '+972-50-000-0000',
+    city: 'Tel Aviv',
+    status: 'active',
     ...overrides,
   };
 }

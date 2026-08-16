@@ -1,6 +1,7 @@
 import { APIRequestContext } from '@playwright/test';
 import {
   CreateCategoryApiPayload,
+  CreateCustomerApiPayload,
   CreatePermissionApiPayload,
   CreatePostApiPayload,
   CreateProductApiPayload,
@@ -17,6 +18,7 @@ export const usersApiPath = '/api/users';
 export const rolesApiPath = '/api/roles';
 export const permissionsApiPath = '/api/permissions';
 export const categoriesApiPath = '/api/categories';
+export const customersApiPath = '/api/customers';
 export const productsApiPath = '/api/products';
 export const postsApiPath = '/api/posts';
 export const tasksApiPath = '/api/tasks';
@@ -66,6 +68,14 @@ export function createCategoryViaApi(request: APIRequestContext, data: CreateCat
 
 export function deleteCategoryViaApi(request: APIRequestContext, id: string) {
   return deleteViaApi(request, categoriesApiPath, id);
+}
+
+export function createCustomerViaApi(request: APIRequestContext, data: CreateCustomerApiPayload) {
+  return createViaApi(request, customersApiPath, data);
+}
+
+export function deleteCustomerViaApi(request: APIRequestContext, id: string) {
+  return deleteViaApi(request, customersApiPath, id);
 }
 
 export function createProductViaApi(request: APIRequestContext, data: CreateProductApiPayload) {
