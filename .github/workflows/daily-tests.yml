@@ -17,10 +17,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 20
           cache: 'npm'
@@ -32,7 +32,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright tests against production
-        run: npx playwright test --project=production tests/users.test.ts tests/permissions.test.ts tests/roles.test.ts tests/categories.test.ts tests/posts.test.ts tests/products.test.ts tests/tasks.test.ts tests/customers.test.ts
+        run: npx playwright test --project=production tests/users.test.ts tests/permissions.test.ts tests/roles.test.ts tests/categories.test.ts tests/posts.test.ts tests/products.test.ts tests/tasks.test.ts tests/customers.test.ts tests/orders.test.ts tests/departments.test.ts
         env:
           DASHBOARD_DATA: '1'
 
@@ -40,7 +40,7 @@ jobs:
       # from the workflow run page, even when everything passes.
       - name: Upload Playwright report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: playwright-report
           path: playwright-report/
