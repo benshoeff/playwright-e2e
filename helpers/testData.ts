@@ -125,6 +125,36 @@ export interface CreateTaskApiPayload {
   dueDate: string;
 }
 
+export interface DepartmentFormData {
+  name: string;
+  description: string;
+  managerLabel?: string;
+}
+
+export interface CreateDepartmentApiPayload {
+  name: string;
+  description: string;
+  managerId?: string;
+}
+
+export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+
+export interface OrderFormData {
+  customerName: string;
+  email: string;
+  items: string;
+  totalAmount: number;
+  status: OrderStatus;
+}
+
+export interface CreateOrderApiPayload {
+  customerName: string;
+  email: string;
+  items: { productId: string; quantity: number; price: number }[];
+  totalAmount: number;
+  status: OrderStatus;
+}
+
 let counter = 0;
 
 // Called fresh inside each test -> no shared/global state between tests,
@@ -132,6 +162,19 @@ let counter = 0;
 function nextUniqueId(): string {
   counter += 1;
   return `${Date.now()}_${counter}`;
+}
+
+export function buildOrder(overrides: Partial<OrderFormData> = {}): OrderFormData {
+  const uniqueId = nextUniqueId();
+
+  return {
+    customerName: `Customer ${uniqueId}`,
+    email: `order+${uniqueId}@example.com`,
+    items: JSON.stringify([{ productId: `pr${uniqueId}`, quantity: 1, price: 99.99 }]),
+    totalAmount: 99.99,
+    status: 'pending',
+    ...overrides,
+  };
 }
 
 // roleLabel is required so tests never silently fall back to a hardcoded role.
@@ -224,6 +267,16 @@ export function buildPost(overrides: BuildPostOverrides): PostFormData {
     title: `Post ${uniqueId}`,
     content: `Content for ${uniqueId}`,
     status: 'draft',
+    ...overrides,
+  };
+}
+
+export function buildDepartment(overrides: Partial<DepartmentFormData> = {}): DepartmentFormData {
+  const uniqueId = nextUniqueId();
+
+  return {
+    name: `Department ${uniqueId}`,
+    description: `Description for ${uniqueId}`,
     ...overrides,
   };
 }

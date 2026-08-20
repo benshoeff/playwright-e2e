@@ -9,6 +9,7 @@ export default defineConfig({
     ],
     use: {
         headless: !!process.env.CI,
+        viewport: { width: 1280, height: 900 },
     },
     projects: [
         {

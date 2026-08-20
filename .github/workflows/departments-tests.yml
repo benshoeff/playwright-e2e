@@ -1,4 +1,4 @@
-name: Posts Tests
+name: Departments Tests
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  posts-e2e:
+  departments-e2e:
     timeout-minutes: 30
     runs-on: ubuntu-latest
 
@@ -26,13 +26,13 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Run Posts tests
-        run: npx playwright test --project=production tests/posts.test.ts
+      - name: Run Departments tests
+        run: npx playwright test --project=production tests/departments.test.ts
 
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: posts-playwright-report
+          name: departments-playwright-report
           path: playwright-report/
           retention-days: 14

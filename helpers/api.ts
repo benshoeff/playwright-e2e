@@ -2,6 +2,8 @@ import { APIRequestContext } from '@playwright/test';
 import {
   CreateCategoryApiPayload,
   CreateCustomerApiPayload,
+  CreateDepartmentApiPayload,
+  CreateOrderApiPayload,
   CreatePermissionApiPayload,
   CreatePostApiPayload,
   CreateProductApiPayload,
@@ -22,6 +24,8 @@ export const customersApiPath = '/api/customers';
 export const productsApiPath = '/api/products';
 export const postsApiPath = '/api/posts';
 export const tasksApiPath = '/api/tasks';
+export const departmentsApiPath = '/api/departments';
+export const ordersApiPath = '/api/orders';
 
 async function createViaApi(request: APIRequestContext, path: string, data: unknown) {
   const response = await request.post(path, { data });
@@ -100,4 +104,20 @@ export function createTaskViaApi(request: APIRequestContext, data: CreateTaskApi
 
 export function deleteTaskViaApi(request: APIRequestContext, id: string) {
   return deleteViaApi(request, tasksApiPath, id);
+}
+
+export function createDepartmentViaApi(request: APIRequestContext, data: CreateDepartmentApiPayload) {
+  return createViaApi(request, departmentsApiPath, data);
+}
+
+export function deleteDepartmentViaApi(request: APIRequestContext, id: string) {
+  return deleteViaApi(request, departmentsApiPath, id);
+}
+
+export function createOrderViaApi(request: APIRequestContext, data: CreateOrderApiPayload) {
+  return createViaApi(request, ordersApiPath, data);
+}
+
+export function deleteOrderViaApi(request: APIRequestContext, id: string) {
+  return deleteViaApi(request, ordersApiPath, id);
 }
