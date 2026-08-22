@@ -216,13 +216,31 @@ export function buildRole(overrides: Partial<RoleFormData> = {}): RoleFormData {
   };
 }
 
+const PERMISSION_RESOURCES = ['reports', 'users', 'orders', 'invoices'];
+
+// Random by default so runs cover different resources over time.
+// Pass `exclude` to force a different value (e.g. guarantee an edit changes the resource).
+export function randomPermissionResource(exclude?: string): string {
+  const options = exclude ? PERMISSION_RESOURCES.filter((r) => r !== exclude) : PERMISSION_RESOURCES;
+  return randomPick(options);
+}
+
+const PERMISSION_ACTIONS: readonly PermissionAction[] = ['create', 'read', 'update', 'delete', 'manage'];
+
+// Random by default so runs cover all actions over time.
+// Pass `exclude` to force a different value (e.g. guarantee an edit changes the action).
+export function randomPermissionAction(exclude?: PermissionAction): PermissionAction {
+  const options = exclude ? PERMISSION_ACTIONS.filter((a) => a !== exclude) : PERMISSION_ACTIONS;
+  return randomPick(options);
+}
+
 export function buildPermission(overrides: Partial<PermissionFormData> = {}): PermissionFormData {
   const uniqueId = nextUniqueId();
 
   return {
     name: `Permission ${uniqueId}`,
-    resource: 'reports',
-    action: 'read',
+    resource: randomPermissionResource(),
+    action: randomPermissionAction(),
     description: `Description for ${uniqueId}`,
     ...overrides,
   };

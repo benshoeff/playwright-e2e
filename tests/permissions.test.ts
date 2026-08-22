@@ -1,5 +1,5 @@
-import { test } from '../fixtures';
-import { buildPermission } from '../helpers/testData';
+import { test, expect } from '../fixtures';
+import { buildPermission, randomPermissionAction, randomPermissionResource } from '../helpers/testData';
 import { createPermissionViaApi, permissionsApiPath } from '../helpers/api';
 import { createViaUi, editViaUi, deleteViaUi } from './crud-helpers';
 
@@ -7,7 +7,7 @@ test.describe('Permissions CRUD', () => {
   test('creates a new permission', async ({ permissionsPage, trackForCleanup }) => {
     const permission = buildPermission();
 
-    await createViaUi(permissionsPage, {
+    const created = await createViaUi(permissionsPage, {
       entityLabel: 'permissions',
       data: permission,
       createdName: permission.name,
@@ -18,6 +18,11 @@ test.describe('Permissions CRUD', () => {
       },
       toast: 'Permission created successfully',
       track: (id) => trackForCleanup(permissionsApiPath, id),
+    });
+
+    await test.step('verify the chosen resource and action were persisted', async () => {
+      expect(created.resource).toBe(permission.resource);
+      expect(created.action).toBe(permission.action);
     });
   });
 
@@ -33,11 +38,11 @@ test.describe('Permissions CRUD', () => {
 
     const updated = buildPermission({
       name: `Edit ${original.name}`,
-      action: 'manage',
-      description: `Updated ${original.description}`,
+      resource: randomPermissionResource(original.resource),
+      action: randomPermissionAction(original.action),
     });
 
-    await editViaUi(permissionsPage, {
+    const apiResult = await editViaUi(permissionsPage, {
       entityLabel: 'permissions',
       originalName: original.name,
       originalRowData: {
@@ -53,6 +58,13 @@ test.describe('Permissions CRUD', () => {
         description: updated.description,
       },
       toast: 'Permission updated successfully',
+    });
+
+    await test.step('verify the edited fields were persisted', async () => {
+      expect(apiResult.name).toBe(updated.name);
+      expect(apiResult.resource).toBe(updated.resource);
+      expect(apiResult.action).toBe(updated.action);
+      expect(apiResult.description).toBe(updated.description);
     });
   });
 
