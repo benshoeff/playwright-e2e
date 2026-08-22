@@ -44,8 +44,9 @@ matches on the absolute path, and on macOS every path starts with
   substring of `'inactive'`, so the assertion passes even when the UI shows the
   wrong value. Use an anchored, case-insensitive regex with `toHaveText`
   (see `UsersPage.expectRow`).
-- `createViaUi` returns the parsed POST response — assert persisted fields on
-  it (e.g. `expect(created.status).toBe(user.status)`).
+- `createViaUi` and `editViaUi` return the parsed POST/PUT response — assert
+  persisted fields on both (e.g. `expect(created.status).toBe(user.status)`,
+  `expect(apiResult.status).toBe(updated.status)`).
 - Track every created resource with `trackForCleanup(apiPath, id)` so the
   fixture deletes it after the test. Exception: when the delete flow itself is
   the test, do not track the deleted entity.

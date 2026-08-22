@@ -10,6 +10,8 @@ export interface CrudPageConfig {
   pageDescription: string;
 }
 
+export type ApiMethod = 'POST' | 'PUT' | 'PATCH';
+
 export abstract class CrudPage<TFormData> {
   readonly page: Page;
 
@@ -82,10 +84,15 @@ export abstract class CrudPage<TFormData> {
 
   // Clicks submit and captures the API response in one place,
   // instead of repeating the Promise.all/waitForResponse pattern per test.
-  async submitAndWaitForApi(method: 'POST' | 'PUT' | 'PATCH') {
+  // Accepts a single method or several (e.g. ['PUT', 'PATCH']) when the
+  // update verb is unknown — the first matching request is captured.
+  async submitAndWaitForApi(method: ApiMethod | readonly ApiMethod[]) {
+    const methods = Array.isArray(method) ? method : [method];
     const [response] = await Promise.all([
       this.page.waitForResponse(
-        (resp) => resp.url().includes(this.config.apiPath) && resp.request().method() === method
+        (resp) =>
+          resp.url().includes(this.config.apiPath) &&
+          methods.includes(resp.request().method() as ApiMethod)
       ),
       this.submitButton.click(),
     ]);

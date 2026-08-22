@@ -53,7 +53,7 @@ test.describe('Users CRUD', () => {
       status: randomUserStatus(original.status),
     });
 
-    await editViaUi(usersPage, {
+    const apiResult = await editViaUi(usersPage, {
       entityLabel: 'users',
       originalName: original.name,
       originalRowData: {
@@ -69,6 +69,12 @@ test.describe('Users CRUD', () => {
         status: updated.status,
       },
       toast: 'User updated successfully',
+    });
+
+    await test.step('verify the edited fields were persisted', async () => {
+      expect(apiResult.name).toBe(updated.name);
+      expect(apiResult.email).toBe(updated.email);
+      expect(apiResult.status).toBe(updated.status);
     });
   });
 
