@@ -12,7 +12,7 @@ export interface CreateViaUiOptions<T> {
   track: (id: string) => void;
 }
 
-export async function createViaUi<T>(page: CrudPage<T>, options: CreateViaUiOptions<T>) {
+export async function createViaUi<T>(page: CrudPage<T>, options: CreateViaUiOptions<T>): Promise<Record<string, any>> {
   await test.step(`navigate to the ${options.entityLabel} page`, async () => {
     await page.goto();
     await page.openEntityPage();
@@ -30,6 +30,8 @@ export async function createViaUi<T>(page: CrudPage<T>, options: CreateViaUiOpti
     await page.expectSuccessToast(options.toast);
     await page.expectRow(options.createdName, options.rowData);
   });
+
+  return created;
 }
 
 export interface EditViaUiOptions<T> {

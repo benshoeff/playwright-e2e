@@ -7,6 +7,25 @@ description: Adds a new Playwright test suite to CI in this repo. Use when a new
 
 When a new test file `tests/<suite>.test.ts` is added, wire it into CI in two places: a per-suite workflow YML and the daily run file.
 
+## 0. Test data conventions for the new suite
+
+When writing (or reviewing) the new `tests/<suite>.test.ts`, follow the repo's
+random-data conventions — see AGENTS.md for full details:
+
+- Build entities with the `build*()` factories from `helpers/testData.ts`
+  (unique names/emails per call; never hardcode names).
+- **Randomize enum-like fields** (status, priority, ...) with `randomPick` or a
+  field-specific helper instead of hardcoding one value, so runs cover all
+  branches over time.
+- In edit flows, force the randomized field to differ from the original value
+  (e.g. `randomUserStatus(original.status)`) so the edit is guaranteed to
+  change something.
+- Validate enum-like display values exactly — anchored case-insensitive regex
+  with `toHaveText` in the page object's `expectRow`, never `toContainText`
+  (`'active'` is a substring of `'inactive'`).
+- Assert persisted fields on the parsed POST response returned by
+  `createViaUi`, and track created resources with `trackForCleanup`.
+
 ## 1. Create the per-suite workflow
 
 Create `.github/workflows/<suite>-tests.yml` following the existing pattern (see `.github/workflows/users-tests.yml` for reference). Replace `<suite>` with the test file's basename (e.g. `posts` → `posts-tests.yml`, running `tests/posts.test.ts`).

@@ -1,5 +1,5 @@
-import { test } from '../fixtures';
-import { buildUser, buildRole } from '../helpers/testData';
+import { test, expect } from '../fixtures';
+import { buildUser, buildRole, randomUserStatus } from '../helpers/testData';
 import { createUserViaApi, createRoleViaApi, usersApiPath, rolesApiPath } from '../helpers/api';
 import { createViaUi, editViaUi, deleteViaUi } from './crud-helpers';
 
@@ -11,7 +11,7 @@ test.describe('Users CRUD', () => {
 
     const user = buildUser({ roleLabel: role.name });
 
-    await createViaUi(usersPage, {
+    const created = await createViaUi(usersPage, {
       entityLabel: 'users',
       data: user,
       createdName: user.name,
@@ -22,6 +22,10 @@ test.describe('Users CRUD', () => {
       },
       toast: 'User created successfully',
       track: (id) => trackForCleanup(usersApiPath, id),
+    });
+
+    await test.step('verify the chosen status was persisted', async () => {
+      expect(created.status).toBe(user.status);
     });
   });
 
@@ -46,7 +50,7 @@ test.describe('Users CRUD', () => {
     const updated = buildUser({
       name: `Edit ${original.name}`,
       roleLabel: updatedRole.name,
-      status: 'inactive',
+      status: randomUserStatus(original.status),
     });
 
     await editViaUi(usersPage, {

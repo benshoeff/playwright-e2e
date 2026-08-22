@@ -36,6 +36,8 @@ export class UsersPage extends CrudPage<UserFormData> {
     await expect(row.getByTestId('data-name')).toContainText(userName);
     await expect(row.getByTestId('data-email')).toContainText(data.email);
     await expect(row.getByTestId('data-roleId')).toContainText(data.roleLabel);
-    await expect(row.getByTestId('data-status')).toContainText(data.status);
+    // Exact match: 'active' is a substring of 'inactive', so a plain
+    // toContainText would pass even when the row shows the wrong status.
+    await expect(row.getByTestId('data-status')).toHaveText(new RegExp(`^\\s*${data.status}\\s*$`, 'i'));
   }
 }
