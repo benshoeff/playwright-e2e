@@ -164,6 +164,19 @@ function nextUniqueId(): string {
   return `${Date.now()}_${counter}`;
 }
 
+export function randomPick<T>(options: readonly T[]): T {
+  return options[Math.floor(Math.random() * options.length)];
+}
+
+const USER_STATUSES: readonly UserStatus[] = ['active', 'inactive'];
+
+// Random by default so runs cover both branches over time.
+// Pass `exclude` to force the opposite value (e.g. guarantee an edit changes the status).
+export function randomUserStatus(exclude?: UserStatus): UserStatus {
+  const options = exclude ? USER_STATUSES.filter((s) => s !== exclude) : USER_STATUSES;
+  return randomPick(options);
+}
+
 export function buildOrder(overrides: Partial<OrderFormData> = {}): OrderFormData {
   const uniqueId = nextUniqueId();
 
@@ -188,7 +201,7 @@ export function buildUser(overrides: BuildUserOverrides): UserFormData {
   return {
     name: `User ${uniqueId}`,
     email: `user+${uniqueId}@example.com`,
-    status: 'active',
+    status: randomUserStatus(),
     ...overrides,
   };
 }
