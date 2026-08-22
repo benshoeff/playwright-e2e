@@ -22,6 +22,18 @@ and custom fixtures (page objects + `trackForCleanup`) in `fixtures.ts`.
 matches on the absolute path, and on macOS every path starts with
 `/Users/<name>`, so `users` silently matches **all** suites.
 
+## Git conventions
+
+- Do suite work on a dedicated branch created fresh from `main`
+  (`git checkout main`, best-effort `git pull --ff-only origin main`, then
+  `git checkout -b <name>`):
+  - new suites → `create-<suite>-tests` (e.g. `create-customers-tests`);
+  - refactors → `refactor-<suite>-tests` for one suite, `refactor-tests`
+    when touching multiple suites or all of them.
+- If the branch name is already taken (locally or on origin), stop and ask
+  rather than inventing a variant.
+- Never commit or push unless explicitly asked.
+
 ## Test data conventions (helpers/testData.ts)
 
 - Always build entities with the `build*()` factories — they generate unique
