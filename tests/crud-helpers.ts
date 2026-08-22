@@ -44,7 +44,10 @@ export interface EditViaUiOptions<T> {
   toast: string;
 }
 
-export async function editViaUi<T>(page: CrudPage<T>, options: EditViaUiOptions<T>) {
+export async function editViaUi<T>(
+  page: CrudPage<T>,
+  options: EditViaUiOptions<T>
+): Promise<Record<string, any>> {
   await test.step(`navigate to the ${options.entityLabel} page`, async () => {
     await page.goto();
     await page.openEntityPage();
@@ -54,16 +57,19 @@ export async function editViaUi<T>(page: CrudPage<T>, options: EditViaUiOptions<
     await page.expectRow(options.originalName, options.originalRowData);
   });
 
-  await test.step('edit and submit', async () => {
+  const apiResult: Record<string, any> = await test.step('edit and submit', async () => {
     await page.openEditForm(options.originalName);
     await page.fillForm(options.updated);
-    await page.submitButton.click();
+    // The update verb differs across entities, so match either.
+    return page.submitAndWaitForApi(['PUT', 'PATCH']);
   });
 
   await test.step('verify success toast and updated row', async () => {
     await page.expectSuccessToast(options.toast);
     await page.expectRow(options.updatedName, options.updatedRowData);
   });
+
+  return apiResult;
 }
 
 export interface DeleteViaUiOptions {
