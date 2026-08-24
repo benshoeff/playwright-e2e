@@ -3,6 +3,7 @@ import {
   CreateCategoryApiPayload,
   CreateCustomerApiPayload,
   CreateDepartmentApiPayload,
+  CreateEmployeeApiPayload,
   CreateOrderApiPayload,
   CreatePermissionApiPayload,
   CreatePostApiPayload,
@@ -25,6 +26,7 @@ export const productsApiPath = '/api/products';
 export const postsApiPath = '/api/posts';
 export const tasksApiPath = '/api/tasks';
 export const departmentsApiPath = '/api/departments';
+export const employeesApiPath = '/api/employees';
 export const ordersApiPath = '/api/orders';
 
 async function createViaApi(request: APIRequestContext, path: string, data: unknown) {
@@ -112,6 +114,14 @@ export function createDepartmentViaApi(request: APIRequestContext, data: CreateD
 
 export function deleteDepartmentViaApi(request: APIRequestContext, id: string) {
   return deleteViaApi(request, departmentsApiPath, id);
+}
+
+export function createEmployeeViaApi(request: APIRequestContext, data: CreateEmployeeApiPayload) {
+  return createViaApi(request, employeesApiPath, data);
+}
+
+export function deleteEmployeeViaApi(request: APIRequestContext, id: string) {
+  return deleteViaApi(request, employeesApiPath, id);
 }
 
 export function createOrderViaApi(request: APIRequestContext, data: CreateOrderApiPayload) {
