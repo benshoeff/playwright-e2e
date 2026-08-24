@@ -39,7 +39,9 @@ test.describe('Employees CRUD', () => {
     expect(created.departmentId).toBe(createdDepartment.id);
     expect(created.position).toBe(employee.position);
     expect(created.salary).toBe(employee.salary);
-    expect(created.hireDate).toBe(employee.hireDate);
+    // Production normalizes 'YYYY-MM-DD' to a full ISO timestamp ('2024-09-01'
+    // -> '2024-09-01T00:00:00.000Z'), so match on the date part only.
+    expect(String(created.hireDate)).toMatch(new RegExp(`^${employee.hireDate}`));
     expect(created.status).toBe(employee.status);
   });
 
@@ -107,7 +109,7 @@ test.describe('Employees CRUD', () => {
     expect(apiResult.departmentId).toBe(createdUpdatedDepartment.id);
     expect(apiResult.position).toBe(updated.position);
     expect(apiResult.salary).toBe(updated.salary);
-    expect(apiResult.hireDate).toBe(updated.hireDate);
+    expect(String(apiResult.hireDate)).toMatch(new RegExp(`^${updated.hireDate}`));
     expect(apiResult.status).toBe(updated.status);
   });
 
