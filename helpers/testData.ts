@@ -137,6 +137,28 @@ export interface CreateDepartmentApiPayload {
   managerId?: string;
 }
 
+export type EmployeeStatus = 'active' | 'on_leave' | 'terminated';
+
+export interface EmployeeFormData {
+  name: string;
+  email: string;
+  departmentLabel: string;
+  position: string;
+  salary: number;
+  hireDate: string;
+  status: EmployeeStatus;
+}
+
+export interface CreateEmployeeApiPayload {
+  name: string;
+  email: string;
+  departmentId?: string;
+  position?: string;
+  salary?: number;
+  hireDate?: string;
+  status?: EmployeeStatus;
+}
+
 export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
 
 export interface OrderFormData {
@@ -308,6 +330,34 @@ export function buildDepartment(overrides: Partial<DepartmentFormData> = {}): De
   return {
     name: `Department ${uniqueId}`,
     description: `Description for ${uniqueId}`,
+    ...overrides,
+  };
+}
+
+const EMPLOYEE_STATUSES: readonly EmployeeStatus[] = ['active', 'on_leave', 'terminated'];
+
+// Random by default so runs cover all branches over time.
+// Pass `exclude` to force a different value (e.g. guarantee an edit changes the status).
+export function randomEmployeeStatus(exclude?: EmployeeStatus): EmployeeStatus {
+  const options = exclude ? EMPLOYEE_STATUSES.filter((s) => s !== exclude) : EMPLOYEE_STATUSES;
+  return randomPick(options);
+}
+
+// departmentLabel is required so tests never silently fall back to a hardcoded department.
+export type BuildEmployeeOverrides = Partial<Omit<EmployeeFormData, 'departmentLabel'>> & {
+  departmentLabel: string;
+};
+
+export function buildEmployee(overrides: BuildEmployeeOverrides): EmployeeFormData {
+  const uniqueId = nextUniqueId();
+
+  return {
+    name: `Employee ${uniqueId}`,
+    email: `employee+${uniqueId}@example.com`,
+    position: `QA Engineer ${uniqueId}`,
+    salary: 50000 + Math.floor(Math.random() * 100) * 1000,
+    hireDate: '2024-09-01',
+    status: randomEmployeeStatus(),
     ...overrides,
   };
 }

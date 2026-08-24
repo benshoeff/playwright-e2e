@@ -10,6 +10,9 @@ export default defineConfig({
     use: {
         headless: !!process.env.CI,
         viewport: { width: 1280, height: 900 },
+        launchOptions: {
+            slowMo: process.env.CI ? 0 : 800,
+        },
     },
     projects: [
         {
