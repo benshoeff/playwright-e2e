@@ -41,9 +41,12 @@ export class ReviewsPage extends CrudPage<ReviewFormData> {
     const row = this.row(reviewAuthor);
     await expect(row.getByTestId('data-author')).toContainText(reviewAuthor);
     await expect(row.getByTestId('data-productId')).toContainText(data.productLabel);
-    // The rating renders as five stars; the first span holds the filled
-    // (amber) ones, so its text is exactly `rating` star characters.
-    await expect(row.getByTestId('data-rating').locator('span').first()).toHaveText('★'.repeat(data.rating));
+    // Rating renders as five stars: filled (amber) plus unfilled (gray).
+    // The whole cell always totals five stars, and the unfilled ones sit in
+    // the last span — so its text pins the rating down exactly.
+    const ratingCell = row.getByTestId('data-rating');
+    await expect(ratingCell).toHaveText('★★★★★');
+    await expect(ratingCell.locator('span').last()).toHaveText('★'.repeat(5 - data.rating));
     await expect(row.getByTestId('data-comment')).toContainText(data.comment);
     // Exact match: anchored regex so no status value can pass for another.
     await expect(row.getByTestId('data-status')).toHaveText(new RegExp(`^\\s*${data.status}\\s*$`, 'i'));
