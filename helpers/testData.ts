@@ -177,6 +177,24 @@ export interface CreateOrderApiPayload {
   status: OrderStatus;
 }
 
+export type ReviewStatus = 'pending' | 'approved' | 'rejected';
+
+export interface ReviewFormData {
+  productLabel: string;
+  author: string;
+  rating: number;
+  comment: string;
+  status: ReviewStatus;
+}
+
+export interface CreateReviewApiPayload {
+  productId: string;
+  author: string;
+  rating: number;
+  comment: string;
+  status: ReviewStatus;
+}
+
 let counter = 0;
 
 // Called fresh inside each test -> no shared/global state between tests,
@@ -374,6 +392,39 @@ export function buildTask(overrides: BuildTaskOverrides): TaskFormData {
     status: 'todo',
     priority: 'low',
     dueDate: '2025-06-01',
+    ...overrides,
+  };
+}
+
+const REVIEW_STATUSES: readonly ReviewStatus[] = ['pending', 'approved', 'rejected'];
+
+// Random by default so runs cover all branches over time.
+// Pass `exclude` to force a different value (e.g. guarantee an edit changes the status).
+export function randomReviewStatus(exclude?: ReviewStatus): ReviewStatus {
+  const options = exclude ? REVIEW_STATUSES.filter((s) => s !== exclude) : REVIEW_STATUSES;
+  return randomPick(options);
+}
+
+const REVIEW_RATINGS: readonly number[] = [1, 2, 3, 4, 5];
+
+// Random by default so runs cover all ratings over time.
+// Pass `exclude` to force a different value (e.g. guarantee an edit changes the rating).
+export function randomReviewRating(exclude?: number): number {
+  const options = exclude ? REVIEW_RATINGS.filter((r) => r !== exclude) : REVIEW_RATINGS;
+  return randomPick(options);
+}
+
+// productLabel is required so tests never silently fall back to a hardcoded product.
+export type BuildReviewOverrides = Partial<Omit<ReviewFormData, 'productLabel'>> & { productLabel: string };
+
+export function buildReview(overrides: BuildReviewOverrides): ReviewFormData {
+  const uniqueId = nextUniqueId();
+
+  return {
+    author: `Reviewer ${uniqueId}`,
+    rating: randomReviewRating(),
+    comment: `Comment for ${uniqueId}`,
+    status: randomReviewStatus(),
     ...overrides,
   };
 }
