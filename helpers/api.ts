@@ -4,6 +4,7 @@ import {
   CreateCustomerApiPayload,
   CreateDepartmentApiPayload,
   CreateEmployeeApiPayload,
+  CreateInvoiceApiPayload,
   CreateOrderApiPayload,
   CreatePermissionApiPayload,
   CreatePostApiPayload,
@@ -32,6 +33,7 @@ export const employeesApiPath = '/api/employees';
 export const ordersApiPath = '/api/orders';
 export const reviewsApiPath = '/api/reviews';
 export const projectsApiPath = '/api/projects';
+export const invoicesApiPath = '/api/invoices';
 
 async function createViaApi(request: APIRequestContext, path: string, data: unknown) {
   const response = await request.post(path, { data });
@@ -150,4 +152,12 @@ export function createProjectViaApi(request: APIRequestContext, data: CreateProj
 
 export function deleteProjectViaApi(request: APIRequestContext, id: string) {
   return deleteViaApi(request, projectsApiPath, id);
+}
+
+export function createInvoiceViaApi(request: APIRequestContext, data: CreateInvoiceApiPayload) {
+  return createViaApi(request, invoicesApiPath, data);
+}
+
+export function deleteInvoiceViaApi(request: APIRequestContext, id: string) {
+  return deleteViaApi(request, invoicesApiPath, id);
 }

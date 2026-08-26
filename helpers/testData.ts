@@ -218,6 +218,26 @@ export interface CreateReviewApiPayload {
   status: ReviewStatus;
 }
 
+export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+
+export interface InvoiceFormData {
+  invoiceNumber: string;
+  customerLabel: string;
+  issueDate: string;
+  dueDate: string;
+  totalAmount: number;
+  status: InvoiceStatus;
+}
+
+export interface CreateInvoiceApiPayload {
+  invoiceNumber: string;
+  customerId: string;
+  issueDate: string;
+  dueDate: string;
+  totalAmount: number;
+  status: InvoiceStatus;
+}
+
 let counter = 0;
 
 // Called fresh inside each test -> no shared/global state between tests,
@@ -472,6 +492,31 @@ export function randomProjectPriority(exclude?: ProjectPriority): ProjectPriorit
 
 // ownerLabel is required so tests never silently fall back to a hardcoded owner.
 export type BuildProjectOverrides = Partial<Omit<ProjectFormData, 'ownerLabel'>> & { ownerLabel: string };
+
+const INVOICE_STATUSES: readonly InvoiceStatus[] = ['draft', 'sent', 'paid', 'overdue', 'cancelled'];
+
+// Random by default so runs cover all branches over time.
+// Pass `exclude` to force a different value (e.g. guarantee an edit changes the status).
+export function randomInvoiceStatus(exclude?: InvoiceStatus): InvoiceStatus {
+  const options = exclude ? INVOICE_STATUSES.filter((s) => s !== exclude) : INVOICE_STATUSES;
+  return randomPick(options);
+}
+
+// customerLabel is required so tests never silently fall back to a hardcoded customer.
+export type BuildInvoiceOverrides = Partial<Omit<InvoiceFormData, 'customerLabel'>> & { customerLabel: string };
+
+export function buildInvoice(overrides: BuildInvoiceOverrides): InvoiceFormData {
+  const uniqueId = nextUniqueId();
+
+  return {
+    invoiceNumber: `INV-${uniqueId}`,
+    issueDate: '2025-07-01',
+    dueDate: '2025-08-01',
+    totalAmount: Number((100 + Math.random() * 900).toFixed(2)),
+    status: randomInvoiceStatus(),
+    ...overrides,
+  };
+}
 
 export function buildProject(overrides: BuildProjectOverrides): ProjectFormData {
   const uniqueId = nextUniqueId();
