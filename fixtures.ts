@@ -12,6 +12,7 @@ import { DepartmentsPage } from './pages/DepartmentsPage';
 import { EmployeesPage } from './pages/EmployeesPage';
 import { ReviewsPage } from './pages/ReviewsPage';
 import { ProjectsPage } from './pages/ProjectsPage';
+import { InvoicesPage } from './pages/InvoicesPage';
 import { deleteViaApi } from './helpers/api';
 
 type Fixtures = {
@@ -28,6 +29,7 @@ type Fixtures = {
   employeesPage: EmployeesPage;
   reviewsPage: ReviewsPage;
   projectsPage: ProjectsPage;
+  invoicesPage: InvoicesPage;
 
   // Call this with an entity path and id whenever a test creates a resource
   // (via UI or API). Every entry collected here gets deleted automatically
@@ -87,6 +89,10 @@ export const test = base.extend<Fixtures>({
 
   projectsPage: async ({ page }, use) => {
     await use(new ProjectsPage(page));
+  },
+
+  invoicesPage: async ({ page }, use) => {
+    await use(new InvoicesPage(page));
   },
 
   trackForCleanup: async ({ request }, use) => {
