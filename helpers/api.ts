@@ -13,6 +13,7 @@ import {
   CreateReviewApiPayload,
   CreateRoleApiPayload,
   CreateTaskApiPayload,
+  CreateTicketApiPayload,
   CreateUserApiPayload,
 } from './testData';
 
@@ -160,4 +161,14 @@ export function createInvoiceViaApi(request: APIRequestContext, data: CreateInvo
 
 export function deleteInvoiceViaApi(request: APIRequestContext, id: string) {
   return deleteViaApi(request, invoicesApiPath, id);
+}
+
+export const ticketsApiPath = '/api/tickets';
+
+export function createTicketViaApi(request: APIRequestContext, data: CreateTicketApiPayload) {
+  return createViaApi(request, ticketsApiPath, data);
+}
+
+export function deleteTicketViaApi(request: APIRequestContext, id: string) {
+  return deleteViaApi(request, ticketsApiPath, id);
 }

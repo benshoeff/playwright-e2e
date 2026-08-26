@@ -531,3 +531,55 @@ export function buildProject(overrides: BuildProjectOverrides): ProjectFormData 
     ...overrides,
   };
 }
+
+export type TicketPriority = 'low' | 'medium' | 'high' | 'critical';
+export type TicketStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
+
+export interface TicketFormData {
+  subject: string;
+  description: string;
+  customerLabel: string;
+  assigneeLabel?: string;
+  priority: TicketPriority;
+  status: TicketStatus;
+}
+
+export interface CreateTicketApiPayload {
+  subject: string;
+  description: string;
+  customerId: string;
+  assigneeId?: string;
+  priority: TicketPriority;
+  status: TicketStatus;
+}
+
+const TICKET_PRIORITIES: readonly TicketPriority[] = ['low', 'medium', 'high', 'critical'];
+
+export function randomTicketPriority(exclude?: TicketPriority): TicketPriority {
+  const options = exclude ? TICKET_PRIORITIES.filter((p) => p !== exclude) : TICKET_PRIORITIES;
+  return randomPick(options);
+}
+
+const TICKET_STATUSES: readonly TicketStatus[] = ['open', 'in_progress', 'resolved', 'closed'];
+
+export function randomTicketStatus(exclude?: TicketStatus): TicketStatus {
+  const options = exclude ? TICKET_STATUSES.filter((s) => s !== exclude) : TICKET_STATUSES;
+  return randomPick(options);
+}
+
+export type BuildTicketOverrides = Partial<Omit<TicketFormData, 'customerLabel' | 'assigneeLabel'>> & {
+  customerLabel: string;
+  assigneeLabel?: string;
+};
+
+export function buildTicket(overrides: BuildTicketOverrides): TicketFormData {
+  const uniqueId = nextUniqueId();
+
+  return {
+    subject: `Ticket ${uniqueId}`,
+    description: `Description for ${uniqueId}`,
+    priority: randomTicketPriority(),
+    status: randomTicketStatus(),
+    ...overrides,
+  };
+}
