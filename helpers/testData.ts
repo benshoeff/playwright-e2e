@@ -1,3 +1,26 @@
+export type ProjectStatus = 'planned' | 'in_progress' | 'on_hold' | 'completed';
+export type ProjectPriority = 'low' | 'medium' | 'high';
+
+export interface ProjectFormData {
+  name: string;
+  description: string;
+  ownerLabel: string;
+  status: ProjectStatus;
+  priority: ProjectPriority;
+  startDate: string;
+  endDate: string;
+}
+
+export interface CreateProjectApiPayload {
+  name: string;
+  description: string;
+  ownerId: string;
+  status: ProjectStatus;
+  priority: ProjectPriority;
+  startDate: string;
+  endDate: string;
+}
+
 export type UserStatus = 'active' | 'inactive';
 
 export interface UserFormData {
@@ -425,6 +448,41 @@ export function buildReview(overrides: BuildReviewOverrides): ReviewFormData {
     rating: randomReviewRating(),
     comment: `Comment for ${uniqueId}`,
     status: randomReviewStatus(),
+    ...overrides,
+  };
+}
+
+const PROJECT_STATUSES: readonly ProjectStatus[] = ['planned', 'in_progress', 'on_hold', 'completed'];
+
+// Random by default so runs cover all branches over time.
+// Pass `exclude` to force a different value (e.g. guarantee an edit changes the status).
+export function randomProjectStatus(exclude?: ProjectStatus): ProjectStatus {
+  const options = exclude ? PROJECT_STATUSES.filter((s) => s !== exclude) : PROJECT_STATUSES;
+  return randomPick(options);
+}
+
+const PROJECT_PRIORITIES: readonly ProjectPriority[] = ['low', 'medium', 'high'];
+
+// Random by default so runs cover all branches over time.
+// Pass `exclude` to force a different value (e.g. guarantee an edit changes the priority).
+export function randomProjectPriority(exclude?: ProjectPriority): ProjectPriority {
+  const options = exclude ? PROJECT_PRIORITIES.filter((p) => p !== exclude) : PROJECT_PRIORITIES;
+  return randomPick(options);
+}
+
+// ownerLabel is required so tests never silently fall back to a hardcoded owner.
+export type BuildProjectOverrides = Partial<Omit<ProjectFormData, 'ownerLabel'>> & { ownerLabel: string };
+
+export function buildProject(overrides: BuildProjectOverrides): ProjectFormData {
+  const uniqueId = nextUniqueId();
+
+  return {
+    name: `Project ${uniqueId}`,
+    description: `Description for ${uniqueId}`,
+    status: randomProjectStatus(),
+    priority: randomProjectPriority(),
+    startDate: '2025-06-01',
+    endDate: '2025-12-31',
     ...overrides,
   };
 }

@@ -8,6 +8,7 @@ import {
   CreatePermissionApiPayload,
   CreatePostApiPayload,
   CreateProductApiPayload,
+  CreateProjectApiPayload,
   CreateReviewApiPayload,
   CreateRoleApiPayload,
   CreateTaskApiPayload,
@@ -30,6 +31,7 @@ export const departmentsApiPath = '/api/departments';
 export const employeesApiPath = '/api/employees';
 export const ordersApiPath = '/api/orders';
 export const reviewsApiPath = '/api/reviews';
+export const projectsApiPath = '/api/projects';
 
 async function createViaApi(request: APIRequestContext, path: string, data: unknown) {
   const response = await request.post(path, { data });
@@ -140,4 +142,12 @@ export function createReviewViaApi(request: APIRequestContext, data: CreateRevie
 
 export function deleteReviewViaApi(request: APIRequestContext, id: string) {
   return deleteViaApi(request, reviewsApiPath, id);
+}
+
+export function createProjectViaApi(request: APIRequestContext, data: CreateProjectApiPayload) {
+  return createViaApi(request, projectsApiPath, data);
+}
+
+export function deleteProjectViaApi(request: APIRequestContext, id: string) {
+  return deleteViaApi(request, projectsApiPath, id);
 }
