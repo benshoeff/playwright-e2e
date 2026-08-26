@@ -1,4 +1,4 @@
-import { test } from '../fixtures';
+import { test, expect } from '../fixtures';
 import { buildCategory } from '../helpers/testData';
 import { createCategoryViaApi, categoriesApiPath } from '../helpers/api';
 import { createViaUi, editViaUi, deleteViaUi } from './crud-helpers';
@@ -7,7 +7,7 @@ test.describe('Categories CRUD', () => {
   test('creates a new category', async ({ categoriesPage, trackForCleanup }) => {
     const category = buildCategory();
 
-    await createViaUi(categoriesPage, {
+    const created = await createViaUi(categoriesPage, {
       entityLabel: 'categories',
       data: category,
       createdName: category.name,
@@ -16,6 +16,10 @@ test.describe('Categories CRUD', () => {
       },
       toast: 'Category created successfully',
       track: (id) => trackForCleanup(categoriesApiPath, id),
+    });
+
+    await test.step('verify the chosen name was persisted', async () => {
+      expect(created.name).toBe(category.name);
     });
   });
 
@@ -32,7 +36,7 @@ test.describe('Categories CRUD', () => {
       description: `Updated ${original.description}`,
     });
 
-    await editViaUi(categoriesPage, {
+    const apiResult = await editViaUi(categoriesPage, {
       entityLabel: 'categories',
       originalName: original.name,
       originalRowData: {
@@ -44,6 +48,10 @@ test.describe('Categories CRUD', () => {
         description: updated.description,
       },
       toast: 'Category updated successfully',
+    });
+
+    await test.step('verify the edited fields were persisted', async () => {
+      expect(apiResult.name).toBe(updated.name);
     });
   });
 

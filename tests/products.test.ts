@@ -1,5 +1,5 @@
-import { test } from '../fixtures';
-import { buildCategory, buildProduct } from '../helpers/testData';
+import { test, expect } from '../fixtures';
+import { buildCategory, buildProduct, randomProductStatus } from '../helpers/testData';
 import {
   createCategoryViaApi,
   createProductViaApi,
@@ -19,7 +19,7 @@ test.describe('Products CRUD', () => {
 
     const product = buildProduct({ categoryLabel: category.name });
 
-    await createViaUi(productsPage, {
+    const created = await createViaUi(productsPage, {
       entityLabel: 'products',
       data: product,
       createdName: product.name,
@@ -30,6 +30,10 @@ test.describe('Products CRUD', () => {
       },
       toast: 'Product created successfully',
       track: (id) => trackForCleanup(productsApiPath, id),
+    });
+
+    await test.step('verify the chosen status was persisted', async () => {
+      expect(created.status).toBe(product.status);
     });
   });
 
@@ -62,10 +66,10 @@ test.describe('Products CRUD', () => {
       name: `Edit ${original.name}`,
       price: 199.99,
       categoryLabel: updatedCategory.name,
-      status: 'discontinued',
+      status: randomProductStatus(original.status),
     });
 
-    await editViaUi(productsPage, {
+    const apiResult = await editViaUi(productsPage, {
       entityLabel: 'products',
       originalName: original.name,
       originalRowData: {
@@ -81,6 +85,11 @@ test.describe('Products CRUD', () => {
         status: updated.status,
       },
       toast: 'Product updated successfully',
+    });
+
+    await test.step('verify the edited fields were persisted', async () => {
+      expect(apiResult.name).toBe(updated.name);
+      expect(apiResult.status).toBe(updated.status);
     });
   });
 

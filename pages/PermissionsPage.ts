@@ -32,9 +32,9 @@ export class PermissionsPage extends CrudPage<PermissionFormData> {
   async expectRow(permissionName: string, data: { resource: string; action: string; description: string }) {
     const row = this.row(permissionName);
     await expect(row.getByTestId('data-name')).toContainText(permissionName);
-    await expect(row.getByTestId('data-resource')).toContainText(data.resource);
-    // Exact match: action is enum-like, so a plain toContainText could pass
-    // even when the row shows the wrong action (same reason as UsersPage).
+    // Exact match: enum-like fields need anchored regex so a plain
+    // toContainText can never pass via substring luck.
+    await expect(row.getByTestId('data-resource')).toHaveText(new RegExp(`^\\s*${data.resource}\\s*$`, 'i'));
     await expect(row.getByTestId('data-action')).toHaveText(new RegExp(`^\\s*${data.action}\\s*$`, 'i'));
     await expect(row.getByTestId('data-description')).toContainText(data.description);
   }

@@ -40,8 +40,10 @@ export class TasksPage extends CrudPage<TaskFormData> {
   async expectRow(taskTitle: string, data: { priority: string; status: string; assigneeLabel: string }) {
     const row = this.row(taskTitle);
     await expect(row.getByTestId('data-title')).toContainText(taskTitle);
-    await expect(row.getByTestId('data-priority')).toContainText(data.priority);
-    await expect(row.getByTestId('data-status')).toContainText(data.status);
-    await expect(row.getByTestId('data-assigneeId')).toContainText(data.assigneeLabel);
+    await expect(row.getByTestId('data-priority')).toHaveText(new RegExp(`^\\s*${data.priority}\\s*$`, 'i'));
+    // The UI replaces underscores with spaces (e.g. "in_progress" → "in progress").
+    const statusLabel = data.status.replace(/_/g, ' ');
+    await expect(row.getByTestId('data-status')).toHaveText(new RegExp(`^\\s*${statusLabel}\\s*$`, 'i'));
+    await expect(row.getByTestId('data-assigneeId')).toHaveText(new RegExp(`^\\s*${data.assigneeLabel}\\s*$`, 'i'));
   }
 }

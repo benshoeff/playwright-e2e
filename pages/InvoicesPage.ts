@@ -42,6 +42,6 @@ export class InvoicesPage extends CrudPage<InvoiceFormData> {
   async expectRow(invoiceNumber: string, data: { status: string }) {
     const row = this.row(invoiceNumber);
     await expect(row.getByTestId('data-invoiceNumber')).toContainText(invoiceNumber);
-    await expect(row.getByTestId('data-status')).toContainText(data.status);
+    await expect(row.getByTestId('data-status')).toHaveText(new RegExp(`^\\s*${data.status}\\s*$`, 'i'));
   }
 }

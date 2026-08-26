@@ -1,5 +1,5 @@
 import { test, expect } from '../fixtures';
-import { buildRole, buildUser, buildProject } from '../helpers/testData';
+import { buildRole, buildUser, buildProject, randomProjectStatus, randomProjectPriority } from '../helpers/testData';
 import {
   createRoleViaApi,
   createUserViaApi,
@@ -84,8 +84,8 @@ test.describe('Projects CRUD', () => {
     const updated = buildProject({
       name: `Edit ${original.name}`,
       description: `Updated ${original.description}`,
-      status: 'completed',
-      priority: 'high',
+      status: randomProjectStatus(original.status),
+      priority: randomProjectPriority(original.priority),
       ownerLabel: updatedOwner.name,
     });
 

@@ -37,6 +37,8 @@ export class ProductsPage extends CrudPage<ProductFormData> {
     await expect(row.getByTestId('data-name')).toContainText(productName);
     await expect(row.getByTestId('data-price')).toContainText(`$${data.price.toFixed(2)}`);
     await expect(row.getByTestId('data-categoryId')).toContainText(data.categoryLabel);
-    await expect(row.getByTestId('data-status')).toContainText(data.status);
+    // Exact match: 'active' is a substring of 'inactive', so a plain
+    // toContainText would pass even when the row shows the wrong status.
+    await expect(row.getByTestId('data-status')).toHaveText(new RegExp(`^\\s*${data.status}\\s*$`, 'i'));
   }
 }

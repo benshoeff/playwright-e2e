@@ -1,4 +1,4 @@
-import { test } from '../fixtures';
+import { test, expect } from '../fixtures';
 import { buildRole } from '../helpers/testData';
 import { createRoleViaApi, rolesApiPath } from '../helpers/api';
 import { createViaUi, editViaUi, deleteViaUi } from './crud-helpers';
@@ -7,7 +7,7 @@ test.describe('Roles CRUD', () => {
   test('creates a new role', async ({ rolesPage, trackForCleanup }) => {
     const role = buildRole();
 
-    await createViaUi(rolesPage, {
+    const created = await createViaUi(rolesPage, {
       entityLabel: 'roles',
       data: role,
       createdName: role.name,
@@ -16,6 +16,10 @@ test.describe('Roles CRUD', () => {
       },
       toast: 'Role created successfully',
       track: (id) => trackForCleanup(rolesApiPath, id),
+    });
+
+    await test.step('verify the chosen name was persisted', async () => {
+      expect(created.name).toBe(role.name);
     });
   });
 
@@ -32,7 +36,7 @@ test.describe('Roles CRUD', () => {
       description: `Updated ${original.description}`,
     });
 
-    await editViaUi(rolesPage, {
+    const apiResult = await editViaUi(rolesPage, {
       entityLabel: 'roles',
       originalName: original.name,
       originalRowData: {
@@ -44,6 +48,10 @@ test.describe('Roles CRUD', () => {
         description: updated.description,
       },
       toast: 'Role updated successfully',
+    });
+
+    await test.step('verify the edited fields were persisted', async () => {
+      expect(apiResult.name).toBe(updated.name);
     });
   });
 

@@ -1,5 +1,5 @@
 import { test, expect } from '../fixtures';
-import { buildRole, buildUser, buildCategory, buildPost } from '../helpers/testData';
+import { buildRole, buildUser, buildCategory, buildPost, randomPostStatus } from '../helpers/testData';
 import {
   createRoleViaApi,
   createUserViaApi,
@@ -36,7 +36,7 @@ test.describe('Posts CRUD', () => {
       categoryLabel: category.name,
     });
 
-    await createViaUi(postsPage, {
+    const created = await createViaUi(postsPage, {
       entityLabel: 'posts',
       data: post,
       createdName: post.title,
@@ -46,6 +46,10 @@ test.describe('Posts CRUD', () => {
       },
       toast: 'Post created successfully',
       track: (id) => trackForCleanup(postsApiPath, id),
+    });
+
+    await test.step('verify the chosen status was persisted', async () => {
+      expect(created.status).toBe(post.status);
     });
   });
 
@@ -89,10 +93,10 @@ test.describe('Posts CRUD', () => {
       content: `Updated ${original.content}`,
       authorLabel: author.name,
       categoryLabel: updatedCategory.name,
-      status: 'published',
+      status: randomPostStatus(original.status),
     });
 
-    await editViaUi(postsPage, {
+    const apiResult = await editViaUi(postsPage, {
       entityLabel: 'posts',
       originalName: original.title,
       originalRowData: {
@@ -108,8 +112,14 @@ test.describe('Posts CRUD', () => {
       toast: 'Post updated successfully',
     });
 
+    await test.step('verify the edited fields were persisted', async () => {
+      expect(apiResult.status).toBe(updated.status);
+    });
+
     await test.step('verify the post was published', async () => {
-      await expect(postsPage.row(updated.title).getByTestId('data-publishedAt')).not.toHaveText('—');
+      if (updated.status === 'published') {
+        await expect(postsPage.row(updated.title).getByTestId('data-publishedAt')).not.toHaveText('—');
+      }
     });
   });
 

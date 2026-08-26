@@ -1,5 +1,5 @@
-import { test } from '../fixtures';
-import { buildOrder } from '../helpers/testData';
+import { test, expect } from '../fixtures';
+import { buildOrder, randomOrderStatus } from '../helpers/testData';
 import { createOrderViaApi, ordersApiPath } from '../helpers/api';
 import { createViaUi, editViaUi, deleteViaUi } from './crud-helpers';
 
@@ -7,7 +7,7 @@ test.describe('Orders CRUD', () => {
   test('creates a new order', async ({ ordersPage, trackForCleanup }) => {
     const order = buildOrder();
 
-    await createViaUi(ordersPage, {
+    const created = await createViaUi(ordersPage, {
       entityLabel: 'orders',
       data: order,
       createdName: order.customerName,
@@ -17,6 +17,10 @@ test.describe('Orders CRUD', () => {
       },
       toast: 'Order created successfully',
       track: (id) => trackForCleanup(ordersApiPath, id),
+    });
+
+    await test.step('verify the chosen status was persisted', async () => {
+      expect(created.status).toBe(order.status);
     });
   });
 
@@ -36,10 +40,10 @@ test.describe('Orders CRUD', () => {
       email: original.email,
       items: original.items,
       totalAmount: 149.99,
-      status: 'delivered',
+      status: randomOrderStatus(original.status),
     });
 
-    await editViaUi(ordersPage, {
+    const apiResult = await editViaUi(ordersPage, {
       entityLabel: 'orders',
       originalName: original.customerName,
       originalRowData: {
@@ -53,6 +57,10 @@ test.describe('Orders CRUD', () => {
         status: updated.status,
       },
       toast: 'Order updated successfully',
+    });
+
+    await test.step('verify the edited fields were persisted', async () => {
+      expect(apiResult.status).toBe(updated.status);
     });
   });
 

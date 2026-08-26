@@ -46,7 +46,8 @@ export class ProjectsPage extends CrudPage<ProjectFormData> {
     await expect(row.getByTestId('data-name')).toContainText(projectName);
     await expect(row.getByTestId('data-ownerId')).toContainText(data.ownerLabel);
     // The UI replaces underscores with spaces (e.g. "in_progress" → "in progress").
-    await expect(row.getByTestId('data-status')).toContainText(data.status.replace(/_/g, ' '));
-    await expect(row.getByTestId('data-priority')).toContainText(data.priority);
+    const statusLabel = data.status.replace(/_/g, ' ');
+    await expect(row.getByTestId('data-status')).toHaveText(new RegExp(`^\\s*${statusLabel}\\s*$`, 'i'));
+    await expect(row.getByTestId('data-priority')).toHaveText(new RegExp(`^\\s*${data.priority}\\s*$`, 'i'));
   }
 }
