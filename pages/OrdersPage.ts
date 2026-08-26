@@ -40,6 +40,6 @@ export class OrdersPage extends CrudPage<OrderFormData> {
     const row = this.row(customerName);
     await expect(row.getByTestId('data-customerName')).toContainText(customerName);
     await expect(row.getByTestId('data-email')).toContainText(data.email);
-    await expect(row.getByTestId('data-status')).toContainText(data.status);
+    await expect(row.getByTestId('data-status')).toHaveText(new RegExp(`^\\s*${data.status}\\s*$`, 'i'));
   }
 }

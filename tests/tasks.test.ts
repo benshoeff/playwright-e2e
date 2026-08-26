@@ -1,5 +1,5 @@
-import { test } from '../fixtures';
-import { buildRole, buildUser, buildTask } from '../helpers/testData';
+import { test, expect } from '../fixtures';
+import { buildRole, buildUser, buildTask, randomTaskStatus, randomTaskPriority } from '../helpers/testData';
 import {
   createRoleViaApi,
   createUserViaApi,
@@ -27,7 +27,7 @@ test.describe('Tasks CRUD', () => {
 
     const task = buildTask({ assigneeLabel: assignee.name });
 
-    await createViaUi(tasksPage, {
+    const created = await createViaUi(tasksPage, {
       entityLabel: 'tasks',
       data: task,
       createdName: task.title,
@@ -38,6 +38,11 @@ test.describe('Tasks CRUD', () => {
       },
       toast: 'Task created successfully',
       track: (id) => trackForCleanup(tasksApiPath, id),
+    });
+
+    await test.step('verify the chosen status and priority were persisted', async () => {
+      expect(created.status).toBe(task.status);
+      expect(created.priority).toBe(task.priority);
     });
   });
 
@@ -78,12 +83,12 @@ test.describe('Tasks CRUD', () => {
     const updated = buildTask({
       title: `Edit ${original.title}`,
       description: `Updated ${original.description}`,
-      status: 'done',
-      priority: 'high',
+      status: randomTaskStatus(original.status),
+      priority: randomTaskPriority(original.priority),
       assigneeLabel: updatedAssignee.name,
     });
 
-    await editViaUi(tasksPage, {
+    const apiResult = await editViaUi(tasksPage, {
       entityLabel: 'tasks',
       originalName: original.title,
       originalRowData: {
@@ -99,6 +104,11 @@ test.describe('Tasks CRUD', () => {
         assigneeLabel: updated.assigneeLabel,
       },
       toast: 'Task updated successfully',
+    });
+
+    await test.step('verify the edited fields were persisted', async () => {
+      expect(apiResult.status).toBe(updated.status);
+      expect(apiResult.priority).toBe(updated.priority);
     });
   });
 

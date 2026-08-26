@@ -1,5 +1,5 @@
-import { test } from '../fixtures';
-import { buildCustomer, buildInvoice } from '../helpers/testData';
+import { test, expect } from '../fixtures';
+import { buildCustomer, buildInvoice, randomInvoiceStatus } from '../helpers/testData';
 import { createCustomerViaApi, createInvoiceViaApi, customersApiPath, invoicesApiPath } from '../helpers/api';
 import { createViaUi, editViaUi, deleteViaUi } from './crud-helpers';
 
@@ -17,7 +17,7 @@ test.describe('Invoices CRUD', () => {
 
     const invoice = buildInvoice({ customerLabel: customer.name });
 
-    await createViaUi(invoicesPage, {
+    const created = await createViaUi(invoicesPage, {
       entityLabel: 'invoices',
       data: invoice,
       createdName: invoice.invoiceNumber,
@@ -26,6 +26,10 @@ test.describe('Invoices CRUD', () => {
       },
       toast: 'Invoice created successfully',
       track: (id) => trackForCleanup(invoicesApiPath, id),
+    });
+
+    await test.step('verify the chosen status was persisted', async () => {
+      expect(created.status).toBe(invoice.status);
     });
   });
 
@@ -65,10 +69,10 @@ test.describe('Invoices CRUD', () => {
       invoiceNumber: `Edit ${original.invoiceNumber}`,
       customerLabel: updatedCustomer.name,
       totalAmount: 999.99,
-      status: 'paid',
+      status: randomInvoiceStatus(original.status),
     });
 
-    await editViaUi(invoicesPage, {
+    const apiResult = await editViaUi(invoicesPage, {
       entityLabel: 'invoices',
       originalName: original.invoiceNumber,
       originalRowData: {
@@ -80,6 +84,10 @@ test.describe('Invoices CRUD', () => {
         status: updated.status,
       },
       toast: 'Invoice updated successfully',
+    });
+
+    await test.step('verify the edited fields were persisted', async () => {
+      expect(apiResult.status).toBe(updated.status);
     });
   });
 

@@ -75,6 +75,13 @@ export interface CreateCategoryApiPayload {
 
 export type CustomerStatus = 'active' | 'inactive';
 
+const CUSTOMER_STATUSES: readonly CustomerStatus[] = ['active', 'inactive'];
+
+export function randomCustomerStatus(exclude?: CustomerStatus): CustomerStatus {
+  const options = exclude ? CUSTOMER_STATUSES.filter((s) => s !== exclude) : CUSTOMER_STATUSES;
+  return randomPick(options);
+}
+
 export interface CustomerFormData {
   name: string;
   email: string;
@@ -92,6 +99,13 @@ export interface CreateCustomerApiPayload {
 }
 
 export type ProductStatus = 'active' | 'inactive' | 'discontinued';
+
+const PRODUCT_STATUSES: readonly ProductStatus[] = ['active', 'inactive', 'discontinued'];
+
+export function randomProductStatus(exclude?: ProductStatus): ProductStatus {
+  const options = exclude ? PRODUCT_STATUSES.filter((s) => s !== exclude) : PRODUCT_STATUSES;
+  return randomPick(options);
+}
 
 export interface ProductFormData {
   name: string;
@@ -111,6 +125,13 @@ export interface CreateProductApiPayload {
 
 export type PostStatus = 'draft' | 'published' | 'archived';
 
+const POST_STATUSES: readonly PostStatus[] = ['draft', 'published', 'archived'];
+
+export function randomPostStatus(exclude?: PostStatus): PostStatus {
+  const options = exclude ? POST_STATUSES.filter((s) => s !== exclude) : POST_STATUSES;
+  return randomPick(options);
+}
+
 export interface PostFormData {
   title: string;
   content: string;
@@ -129,6 +150,20 @@ export interface CreatePostApiPayload {
 
 export type TaskStatus = 'todo' | 'in_progress' | 'done';
 export type TaskPriority = 'low' | 'medium' | 'high';
+
+const TASK_STATUSES: readonly TaskStatus[] = ['todo', 'in_progress', 'done'];
+
+export function randomTaskStatus(exclude?: TaskStatus): TaskStatus {
+  const options = exclude ? TASK_STATUSES.filter((s) => s !== exclude) : TASK_STATUSES;
+  return randomPick(options);
+}
+
+const TASK_PRIORITIES: readonly TaskPriority[] = ['low', 'medium', 'high'];
+
+export function randomTaskPriority(exclude?: TaskPriority): TaskPriority {
+  const options = exclude ? TASK_PRIORITIES.filter((p) => p !== exclude) : TASK_PRIORITIES;
+  return randomPick(options);
+}
 
 export interface TaskFormData {
   title: string;
@@ -183,6 +218,13 @@ export interface CreateEmployeeApiPayload {
 }
 
 export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+
+const ORDER_STATUSES: readonly OrderStatus[] = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+
+export function randomOrderStatus(exclude?: OrderStatus): OrderStatus {
+  const options = exclude ? ORDER_STATUSES.filter((s) => s !== exclude) : ORDER_STATUSES;
+  return randomPick(options);
+}
 
 export interface OrderFormData {
   customerName: string;
@@ -268,7 +310,7 @@ export function buildOrder(overrides: Partial<OrderFormData> = {}): OrderFormDat
     email: `order+${uniqueId}@example.com`,
     items: JSON.stringify([{ productId: `pr${uniqueId}`, quantity: 1, price: 99.99 }]),
     totalAmount: 99.99,
-    status: 'pending',
+    status: randomOrderStatus(),
     ...overrides,
   };
 }
@@ -347,7 +389,7 @@ export function buildCustomer(overrides: Partial<CustomerFormData> = {}): Custom
     email: `customer+${uniqueId}@example.com`,
     phone: '+972-50-000-0000',
     city: 'Tel Aviv',
-    status: 'active',
+    status: randomCustomerStatus(),
     ...overrides,
   };
 }
@@ -362,7 +404,7 @@ export function buildProduct(overrides: BuildProductOverrides): ProductFormData 
     name: `Product ${uniqueId}`,
     description: `Description for ${uniqueId}`,
     price: 99.99,
-    status: 'active',
+    status: randomProductStatus(),
     ...overrides,
   };
 }
@@ -380,7 +422,7 @@ export function buildPost(overrides: BuildPostOverrides): PostFormData {
   return {
     title: `Post ${uniqueId}`,
     content: `Content for ${uniqueId}`,
-    status: 'draft',
+    status: randomPostStatus(),
     ...overrides,
   };
 }
@@ -432,8 +474,8 @@ export function buildTask(overrides: BuildTaskOverrides): TaskFormData {
   return {
     title: `Task ${uniqueId}`,
     description: `Description for ${uniqueId}`,
-    status: 'todo',
-    priority: 'low',
+    status: randomTaskStatus(),
+    priority: randomTaskPriority(),
     dueDate: '2025-06-01',
     ...overrides,
   };

@@ -38,6 +38,6 @@ export class PostsPage extends CrudPage<PostFormData> {
     const row = this.row(postTitle);
     await expect(row.getByTestId('data-title')).toContainText(postTitle);
     await expect(row.getByTestId('data-authorId')).toContainText(data.authorLabel);
-    await expect(row.getByTestId('data-status')).toContainText(data.status);
+    await expect(row.getByTestId('data-status')).toHaveText(new RegExp(`^\\s*${data.status}\\s*$`, 'i'));
   }
 }

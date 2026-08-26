@@ -1,5 +1,5 @@
-import { test } from '../fixtures';
-import { buildCustomer } from '../helpers/testData';
+import { test, expect } from '../fixtures';
+import { buildCustomer, randomCustomerStatus } from '../helpers/testData';
 import { createCustomerViaApi, customersApiPath } from '../helpers/api';
 import { createViaUi, editViaUi, deleteViaUi } from './crud-helpers';
 
@@ -7,7 +7,7 @@ test.describe('Customers CRUD', () => {
   test('creates a new customer', async ({ customersPage, trackForCleanup }) => {
     const customer = buildCustomer();
 
-    await createViaUi(customersPage, {
+    const created = await createViaUi(customersPage, {
       entityLabel: 'customers',
       data: customer,
       createdName: customer.name,
@@ -19,6 +19,10 @@ test.describe('Customers CRUD', () => {
       },
       toast: 'Customer created successfully',
       track: (id) => trackForCleanup(customersApiPath, id),
+    });
+
+    await test.step('verify the chosen status was persisted', async () => {
+      expect(created.status).toBe(customer.status);
     });
   });
 
@@ -36,10 +40,10 @@ test.describe('Customers CRUD', () => {
     const updated = buildCustomer({
       name: `Edit ${original.name}`,
       city: 'Jerusalem',
-      status: 'inactive',
+      status: randomCustomerStatus(original.status),
     });
 
-    await editViaUi(customersPage, {
+    const apiResult = await editViaUi(customersPage, {
       entityLabel: 'customers',
       originalName: original.name,
       originalRowData: {
@@ -57,6 +61,12 @@ test.describe('Customers CRUD', () => {
         status: updated.status,
       },
       toast: 'Customer updated successfully',
+    });
+
+    await test.step('verify the edited fields were persisted', async () => {
+      expect(apiResult.name).toBe(updated.name);
+      expect(apiResult.email).toBe(updated.email);
+      expect(apiResult.status).toBe(updated.status);
     });
   });
 

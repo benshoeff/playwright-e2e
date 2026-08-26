@@ -1,4 +1,4 @@
-import { test } from '../fixtures';
+import { test, expect } from '../fixtures';
 import { buildCustomer, buildRole, buildUser, buildTicket, randomTicketStatus, randomTicketPriority } from '../helpers/testData';
 import {
   createCustomerViaApi,
@@ -33,7 +33,7 @@ test.describe('Tickets CRUD', () => {
 
     const ticket = buildTicket({ customerLabel: customer.name, assigneeLabel: assignee.name });
 
-    await createViaUi(ticketsPage, {
+    const created = await createViaUi(ticketsPage, {
       entityLabel: 'tickets',
       data: ticket,
       createdName: ticket.subject,
@@ -45,6 +45,11 @@ test.describe('Tickets CRUD', () => {
       },
       toast: 'Ticket created successfully',
       track: (id) => trackForCleanup(ticketsApiPath, id),
+    });
+
+    await test.step('verify the chosen status and priority were persisted', async () => {
+      expect(created.status).toBe(ticket.status);
+      expect(created.priority).toBe(ticket.priority);
     });
   });
 
@@ -95,7 +100,7 @@ test.describe('Tickets CRUD', () => {
       priority: randomTicketPriority(original.priority),
     });
 
-    await editViaUi(ticketsPage, {
+    const apiResult = await editViaUi(ticketsPage, {
       entityLabel: 'tickets',
       originalName: original.subject,
       originalRowData: {
@@ -113,6 +118,11 @@ test.describe('Tickets CRUD', () => {
         assigneeLabel: updated.assigneeLabel ?? '—',
       },
       toast: 'Ticket updated successfully',
+    });
+
+    await test.step('verify the edited fields were persisted', async () => {
+      expect(apiResult.status).toBe(updated.status);
+      expect(apiResult.priority).toBe(updated.priority);
     });
   });
 

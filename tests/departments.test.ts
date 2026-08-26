@@ -1,4 +1,4 @@
-import { test } from '../fixtures';
+import { test, expect } from '../fixtures';
 import { buildDepartment, buildUser, buildRole } from '../helpers/testData';
 import {
   createDepartmentViaApi,
@@ -27,7 +27,7 @@ test.describe('Departments CRUD', () => {
 
     const department = buildDepartment({ managerLabel: manager.name });
 
-    await createViaUi(departmentsPage, {
+    const created = await createViaUi(departmentsPage, {
       entityLabel: 'departments',
       data: department,
       createdName: department.name,
@@ -37,6 +37,10 @@ test.describe('Departments CRUD', () => {
       },
       toast: 'Department created successfully',
       track: (id) => trackForCleanup(departmentsApiPath, id),
+    });
+
+    await test.step('verify the chosen name was persisted', async () => {
+      expect(created.name).toBe(department.name);
     });
   });
 
@@ -77,7 +81,7 @@ test.describe('Departments CRUD', () => {
       managerLabel: updatedManager.name,
     });
 
-    await editViaUi(departmentsPage, {
+    const apiResult = await editViaUi(departmentsPage, {
       entityLabel: 'departments',
       originalName: original.name,
       originalRowData: {
@@ -91,6 +95,10 @@ test.describe('Departments CRUD', () => {
         ...(updated.managerLabel ? { managerLabel: updated.managerLabel } : {}),
       },
       toast: 'Department updated successfully',
+    });
+
+    await test.step('verify the edited fields were persisted', async () => {
+      expect(apiResult.name).toBe(updated.name);
     });
   });
 
