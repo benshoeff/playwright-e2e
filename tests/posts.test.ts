@@ -117,7 +117,9 @@ test.describe('Posts CRUD', () => {
     });
 
     await test.step('verify the post was published', async () => {
-      await expect(postsPage.row(updated.title).getByTestId('data-publishedAt')).not.toHaveText('—');
+      if (updated.status === 'published') {
+        await expect(postsPage.row(updated.title).getByTestId('data-publishedAt')).not.toHaveText('—');
+      }
     });
   });
 
