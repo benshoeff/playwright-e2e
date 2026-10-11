@@ -26,6 +26,10 @@ export class ReviewsPage extends CrudPage<ReviewFormData> {
     this.statusSelect = page.getByTestId('status-select');
   }
 
+  protected identityInput(): Locator {
+    return this.authorInput;
+  }
+
   async fillForm(data: ReviewFormData) {
     await this.productIdSelect.selectOption({ label: data.productLabel });
     await this.authorInput.fill(data.author);

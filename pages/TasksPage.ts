@@ -28,6 +28,10 @@ export class TasksPage extends CrudPage<TaskFormData> {
     this.dueDateInput = page.getByTestId('dueDate-input');
   }
 
+  protected identityInput(): Locator {
+    return this.titleInput;
+  }
+
   async fillForm(data: TaskFormData) {
     await this.titleInput.fill(data.title);
     await this.textareaInput.fill(data.description);

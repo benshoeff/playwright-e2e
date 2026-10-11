@@ -26,6 +26,10 @@ export class PostsPage extends CrudPage<PostFormData> {
     this.statusSelect = page.getByTestId('status-select');
   }
 
+  protected identityInput(): Locator {
+    return this.titleInput;
+  }
+
   async fillForm(data: PostFormData) {
     await this.titleInput.fill(data.title);
     await this.textareaInput.fill(data.content);

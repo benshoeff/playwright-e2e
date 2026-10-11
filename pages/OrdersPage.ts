@@ -28,6 +28,10 @@ export class OrdersPage extends CrudPage<OrderFormData> {
     this.statusSelect = page.getByTestId('status-select');
   }
 
+  protected identityInput(): Locator {
+    return this.customerNameInput;
+  }
+
   async fillForm(data: OrderFormData) {
     await this.customerNameInput.fill(data.customerName);
     await this.emailInput.fill(data.email);

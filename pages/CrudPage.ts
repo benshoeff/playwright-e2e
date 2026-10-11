@@ -78,8 +78,19 @@ export abstract class CrudPage<TFormData> {
     await expect(this.page.locator('h2').last()).toHaveText(`Create ${this.config.entityName}`);
   }
 
+  // The input holding the row's identity ("name"). Used to wait for the edit
+  // form to finish pre-filling. Defaults to the shared name-input; entities
+  // whose identity lives in another field override this.
+  protected identityInput(): Locator {
+    return this.nameInput;
+  }
+
   async openEditForm(name: string) {
     await this.row(name).getByTestId('edit-button').click();
+    // Wait for the form to finish pre-filling with the existing value before
+    // the test overwrites it. Otherwise fill() can race the app's pre-fill and
+    // end up appending the new value to the old one.
+    await expect(this.identityInput()).toHaveValue(name);
   }
 
   // Clicks submit and captures the API response in one place,

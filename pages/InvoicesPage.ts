@@ -30,6 +30,10 @@ export class InvoicesPage extends CrudPage<InvoiceFormData> {
     this.statusSelect = page.getByTestId('status-select');
   }
 
+  protected identityInput(): Locator {
+    return this.invoiceNumberInput;
+  }
+
   async fillForm(data: InvoiceFormData) {
     await this.invoiceNumberInput.fill(data.invoiceNumber);
     await this.customerIdSelect.selectOption({ label: data.customerLabel });

@@ -28,6 +28,10 @@ export class TicketsPage extends CrudPage<TicketFormData> {
     this.statusSelect = page.getByTestId('status-select');
   }
 
+  protected identityInput(): Locator {
+    return this.subjectInput;
+  }
+
   async fillForm(data: TicketFormData) {
     await this.subjectInput.fill(data.subject);
     await this.textareaInput.fill(data.description);
