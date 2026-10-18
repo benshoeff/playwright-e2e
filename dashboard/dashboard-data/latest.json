@@ -1,11 +1,11 @@
 {
-  "id": "github-39023539811",
+  "id": "github-39118726794",
   "source": "github",
   "status": "passed",
   "project": "production",
-  "startedAt": "2026-10-17T10:06:08.712Z",
-  "finishedAt": "2026-10-17T10:07:04.287Z",
-  "durationMs": 55575,
+  "startedAt": "2026-10-18T10:19:26.611Z",
+  "finishedAt": "2026-10-18T10:20:15.317Z",
+  "durationMs": 48706,
   "total": 45,
   "passed": 45,
   "failed": 0,
@@ -14,319 +14,319 @@
   "timedOut": 0,
   "tests": [
     {
-      "title": "creates a new customer",
-      "project": "production",
-      "status": "passed",
-      "flaky": false,
-      "durationMs": 3281
-    },
-    {
       "title": "creates a new category",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 3400
+      "durationMs": 3695
+    },
+    {
+      "title": "creates a new customer",
+      "project": "production",
+      "status": "passed",
+      "flaky": false,
+      "durationMs": 3678
     },
     {
       "title": "edits an existing category",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2011
+      "durationMs": 1908
     },
     {
       "title": "edits an existing customer",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2188
-    },
-    {
-      "title": "deletes an existing category",
-      "project": "production",
-      "status": "passed",
-      "flaky": false,
-      "durationMs": 1990
+      "durationMs": 1957
     },
     {
       "title": "deletes an existing customer",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 1955
+      "durationMs": 1397
     },
     {
-      "title": "creates a new employee",
+      "title": "deletes an existing category",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2149
+      "durationMs": 1763
     },
     {
       "title": "creates a new department",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2253
+      "durationMs": 1977
     },
     {
-      "title": "edits an existing employee",
+      "title": "creates a new employee",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2892
+      "durationMs": 1914
     },
     {
       "title": "edits an existing department",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2872
+      "durationMs": 2284
     },
     {
-      "title": "deletes an existing employee",
+      "title": "edits an existing employee",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2136
+      "durationMs": 2129
     },
     {
       "title": "deletes an existing department",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2244
+      "durationMs": 1947
+    },
+    {
+      "title": "deletes an existing employee",
+      "project": "production",
+      "status": "passed",
+      "flaky": false,
+      "durationMs": 2009
     },
     {
       "title": "creates a new invoice",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2082
+      "durationMs": 1909
     },
     {
       "title": "creates a new order",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 1947
+      "durationMs": 1825
     },
     {
       "title": "edits an existing order",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2029
+      "durationMs": 1889
     },
     {
       "title": "edits an existing invoice",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2421
+      "durationMs": 2110
     },
     {
       "title": "deletes an existing order",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 1963
+      "durationMs": 1867
     },
     {
       "title": "deletes an existing invoice",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2260
+      "durationMs": 1858
     },
     {
       "title": "creates a new permission",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 1978
+      "durationMs": 1728
     },
     {
       "title": "creates a new post",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2240
+      "durationMs": 2046
     },
     {
       "title": "edits an existing permission",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 1997
+      "durationMs": 1756
     },
     {
       "title": "edits an existing post",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2502
+      "durationMs": 2138
     },
     {
       "title": "deletes an existing permission",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 1885
+      "durationMs": 1702
     },
     {
       "title": "deletes an existing post",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2343
+      "durationMs": 2018
     },
     {
       "title": "creates a new product",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2016
+      "durationMs": 1790
     },
     {
       "title": "creates a new project",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2155
+      "durationMs": 1943
     },
     {
       "title": "edits an existing product",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2284
-    },
-    {
-      "title": "deletes an existing product",
-      "project": "production",
-      "status": "passed",
-      "flaky": false,
-      "durationMs": 2098
+      "durationMs": 1934
     },
     {
       "title": "edits an existing project",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2443
+      "durationMs": 2073
     },
     {
-      "title": "creates a new review",
+      "title": "deletes an existing product",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2173
+      "durationMs": 1838
     },
     {
       "title": "deletes an existing project",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2175
+      "durationMs": 1893
+    },
+    {
+      "title": "creates a new review",
+      "project": "production",
+      "status": "passed",
+      "flaky": false,
+      "durationMs": 1952
     },
     {
       "title": "creates a new role",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 1836
+      "durationMs": 1654
     },
     {
       "title": "edits an existing review",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2625
+      "durationMs": 2158
     },
     {
       "title": "edits an existing role",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2118
+      "durationMs": 1748
     },
     {
       "title": "deletes an existing review",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2169
+      "durationMs": 1841
     },
     {
       "title": "deletes an existing role",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 1848
+      "durationMs": 1754
     },
     {
       "title": "creates a new task",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2147
+      "durationMs": 1863
     },
     {
       "title": "creates a new ticket",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 3208
+      "durationMs": 2048
     },
     {
       "title": "edits an existing task",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2522
-    },
-    {
-      "title": "deletes an existing task",
-      "project": "production",
-      "status": "passed",
-      "flaky": false,
-      "durationMs": 2168
+      "durationMs": 2092
     },
     {
       "title": "edits an existing ticket",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2635
+      "durationMs": 1758
+    },
+    {
+      "title": "deletes an existing task",
+      "project": "production",
+      "status": "passed",
+      "flaky": false,
+      "durationMs": 2338
     },
     {
       "title": "deletes an existing ticket",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2030
+      "durationMs": 2185
     },
     {
       "title": "creates a new user",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2123
+      "durationMs": 1762
     },
     {
       "title": "edits an existing user",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 2327
+      "durationMs": 2015
     },
     {
       "title": "deletes an existing user",
       "project": "production",
       "status": "passed",
       "flaky": false,
-      "durationMs": 1990
+      "durationMs": 1461
     }
   ]
 }
